@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BwR 12 – interaktive Übungen</title>
+<style>
+:root{
+  --ink:#14213A; --ink-soft:#4A5A79; --paper:#EFF1F6; --card:#FFFFFF;
+  --rule:#C9D0DE; --navy:#1F3864; --gold:#B07D14;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#E8ECF4; --ink-soft:#A3AFC6; --paper:#10141F; --card:#1A2032;
+    --rule:#333D55; --navy:#93B0E0; --gold:#E2B95C;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#E8ECF4; --ink-soft:#A3AFC6; --paper:#10141F; --card:#1A2032;
+  --rule:#333D55; --navy:#93B0E0; --gold:#E2B95C;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"Segoe UI Variable Display","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",Arial,sans-serif;
+  line-height:1.5; -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:44rem;margin:0 auto;padding:1.4rem 1.1rem 3rem}
+.back{display:inline-block;color:var(--ink-soft);text-decoration:none;font-size:.92rem;margin-bottom:1rem}
+.back:hover{color:var(--navy)}
+header{border-bottom:2px solid var(--navy);padding-bottom:1.1rem;margin-bottom:1.8rem}
+h1{font-size:clamp(1.6rem,6vw,2.2rem);font-weight:800;letter-spacing:-.025em;line-height:1.1;margin:0 0 .35rem}
+.sub{color:var(--ink-soft);margin:0;font-size:1rem}
+h2{
+  font-size:.98rem;font-weight:700;color:var(--navy);margin:2.2rem 0 .7rem;
+  padding-bottom:.35rem;border-bottom:1px solid var(--rule);
+}
+h2:first-of-type{margin-top:0}
+.item{
+  display:block;background:var(--card);border:1px solid var(--rule);border-left:5px solid var(--navy);
+  border-radius:.5rem;padding:.95rem 1rem;margin-bottom:.7rem;text-decoration:none;color:inherit;
+  transition:border-color .15s;
+}
+.item:hover,.item:focus-visible{border-left-color:var(--gold)}
+.item:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.item b{display:block;font-size:1.08rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.18rem}
+.item span{display:block;font-size:.94rem;color:var(--ink-soft)}
+.soon{
+  border:1px dashed var(--rule);border-radius:.5rem;padding:.85rem 1rem;
+  color:var(--ink-soft);font-size:.94rem;
+}
+footer{margin-top:2.6rem;padding-top:1rem;border-top:1px solid var(--rule);color:var(--ink-soft);font-size:.88rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="../">← Alle Kurse</a>
+
+  <header>
+    <h1>Betriebswirtschaftslehre mit Rechnungswesen 12</h1>
+    <p class="sub">Interaktive Übungen zu den vier Lernbereichen</p>
+  </header>
+
+  <h2>Lernbereich 3 — Jahresabschlussarbeiten durchführen</h2>
+  <a class="item" href="lb3-quiz/">
+    <b>Zehn Fragen zum Einstieg</b>
+    <span>Was Sie schon wissen und was Sie sich erschließen können — zehn Fragen mit sofortiger Auflösung, etwa zwölf Minuten.</span>
+  </a>
+
+  <h2>Lernbereich 4 — Finanzierung und Investition</h2>
+  <p class="soon">Kommt im Lauf des Schuljahres dazu.</p>
+
+  <h2>Lernbereich 1 — Teilkostenrechnung</h2>
+  <p class="soon">Kommt im Lauf des Schuljahres dazu.</p>
+
+  <h2>Lernbereich 2 — Marketing</h2>
+  <p class="soon">Kommt im Lauf des Schuljahres dazu.</p>
+
+  <footer>Nichts davon zählt für eine Note.</footer>
+
+</div>
+</body>
+</html>

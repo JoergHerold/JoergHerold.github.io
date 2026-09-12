@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zehn Fragen zum Jahresabschluss</title>
+<style>
+:root{
+  --ink:#14213A;
+  --ink-soft:#4A5A79;
+  --paper:#EFF1F6;
+  --card:#FFFFFF;
+  --rule:#C9D0DE;
+  --navy:#1F3864;
+  --right:#1B6B4C;
+  --right-bg:#E4F1EA;
+  --wrong:#A03A3A;
+  --wrong-bg:#F6E6E6;
+  --gold:#B07D14;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#E8ECF4;
+    --ink-soft:#A3AFC6;
+    --paper:#10141F;
+    --card:#1A2032;
+    --rule:#333D55;
+    --navy:#93B0E0;
+    --right:#6FD3A5;
+    --right-bg:#17352A;
+    --wrong:#E99494;
+    --wrong-bg:#3A2020;
+    --gold:#E2B95C;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#E8ECF4; --ink-soft:#A3AFC6; --paper:#10141F; --card:#1A2032;
+  --rule:#333D55; --navy:#93B0E0; --right:#6FD3A5; --right-bg:#17352A;
+  --wrong:#E99494; --wrong-bg:#3A2020; --gold:#E2B95C;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Segoe UI Variable Display","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-weight:400;
+  line-height:1.5;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:44rem;margin:0 auto;padding:1.1rem 1.1rem 3rem;min-height:100vh;display:flex;flex-direction:column}
+
+/* ---------- Fortschritt ---------- */
+.rail{display:flex;gap:.28rem;margin-bottom:.55rem}
+.tick{flex:1;height:.3rem;border-radius:999px;background:var(--rule);transition:background .25s}
+.tick.done{background:var(--navy)}
+.tick.now{background:var(--gold)}
+.meta{font-size:.82rem;color:var(--ink-soft);letter-spacing:.01em;margin-bottom:1.2rem}
+
+/* ---------- Startseite ---------- */
+.stack{position:relative;height:6.5rem;margin:1.5rem 0 2rem}
+.stack i{
+  position:absolute;left:50%;top:0;display:block;width:min(17rem,80%);height:5.6rem;
+  border:1.5px solid var(--rule);border-radius:.6rem;background:var(--card);
+}
+.stack i:nth-child(1){transform:translateX(-50%) rotate(-4deg)}
+.stack i:nth-child(2){transform:translateX(-50%) rotate(2.5deg)}
+.stack i:nth-child(3){transform:translateX(-50%);border-color:var(--navy);border-width:2px}
+.stack b{
+  position:absolute;left:50%;top:1.45rem;transform:translateX(-50%);
+  font-size:2.6rem;font-weight:800;color:var(--navy);letter-spacing:-.03em;
+}
+
+h1{font-size:clamp(1.75rem,7vw,2.6rem);font-weight:800;letter-spacing:-.028em;line-height:1.08;margin:.2rem 0 .7rem}
+.lede{font-size:1.02rem;color:var(--ink-soft);margin:0 0 1.1rem;max-width:34rem}
+.rules{list-style:none;margin:0 0 1.8rem;padding:0;font-size:.95rem;color:var(--ink-soft)}
+.rules li{padding:.34rem 0 .34rem 1.15rem;position:relative}
+.rules li::before{content:"";position:absolute;left:0;top:.92rem;width:.42rem;height:.42rem;border-radius:50%;background:var(--navy)}
+
+/* ---------- Frage ---------- */
+.q{
+  background:var(--card);border:1px solid var(--rule);border-left:5px solid var(--navy);
+  border-radius:.5rem;padding:1.05rem 1.05rem 1.15rem;margin-bottom:1rem;
+}
+.qnum{font-size:.78rem;font-weight:700;color:var(--navy);letter-spacing:.06em;margin-bottom:.3rem}
+.qtext{font-size:1.18rem;font-weight:500;line-height:1.35;margin:0}
+.qhint{font-size:.92rem;color:var(--ink-soft);margin:.55rem 0 0}
+
+.answers{display:flex;flex-direction:column;gap:.55rem}
+.a{
+  display:flex;align-items:flex-start;gap:.75rem;width:100%;text-align:left;
+  background:var(--card);color:var(--ink);border:1.5px solid var(--rule);border-radius:.5rem;
+  padding:.85rem .9rem;font:inherit;font-size:1.02rem;cursor:pointer;
+  transition:border-color .15s, background .15s;
+}
+.a:hover:not(:disabled){border-color:var(--navy)}
+.a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.a:disabled{cursor:default}
+.key{
+  flex:none;width:1.6rem;height:1.6rem;border-radius:.35rem;background:var(--paper);
+  border:1px solid var(--rule);display:grid;place-items:center;
+  font-size:.85rem;font-weight:700;color:var(--ink-soft);margin-top:.05rem;
+}
+.a.right{border-color:var(--right);background:var(--right-bg)}
+.a.right .key{background:var(--right);border-color:var(--right);color:#fff}
+.a.wrong{border-color:var(--wrong);background:var(--wrong-bg)}
+.a.wrong .key{background:var(--wrong);border-color:var(--wrong);color:#fff}
+
+.explain{
+  margin-top:.9rem;border-left:3px solid var(--gold);padding:.15rem 0 .15rem .8rem;
+  font-size:.97rem;color:var(--ink);
+}
+.verdict{font-weight:700;display:block;margin-bottom:.15rem}
+.verdict.ok{color:var(--right)}
+.verdict.no{color:var(--wrong)}
+
+/* ---------- Knöpfe ---------- */
+.btn{
+  display:block;width:100%;margin-top:1.1rem;padding:.95rem 1rem;border:none;border-radius:.5rem;
+  background:var(--navy);color:#fff;font:inherit;font-size:1.05rem;font-weight:700;cursor:pointer;
+}
+:root[data-theme="dark"] .btn,
+:root:not([data-theme="light"]) .btn{color:#0F1320}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .btn{color:#fff}}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--rule);font-weight:500}
+
+/* ---------- Ergebnis ---------- */
+.score{font-size:clamp(3rem,16vw,4.6rem);font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--navy)}
+.score span{font-size:.34em;font-weight:500;color:var(--ink-soft);letter-spacing:0}
+.review{list-style:none;margin:1.4rem 0 0;padding:0;border-top:1px solid var(--rule)}
+.review li{display:flex;gap:.7rem;align-items:flex-start;padding:.65rem 0;border-bottom:1px solid var(--rule);font-size:.95rem}
+.mark{flex:none;font-weight:700;width:1.1rem}
+.mark.ok{color:var(--right)}
+.mark.no{color:var(--wrong)}
+
+.hidden{display:none}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Start -->
+  <section id="start">
+    <div class="stack"><i></i><i></i><i></i><b>10</b></div>
+    <h1>Zehn Fragen, bevor wir loslegen</h1>
+    <p class="lede">Ein Aufwärmen zum neuen Lernbereich. Manches kennen Sie aus der 11. Klasse, manches können Sie sich zusammenreimen — und bei zwei Fragen liegt fast jeder daneben.</p>
+    <button class="btn" id="go">Los geht's</button>
+  </section>
+
+  <!-- Quiz -->
+  <section id="quiz" class="hidden">
+    <div class="rail" id="rail"></div>
+    <div class="meta" id="meta"></div>
+    <div class="q">
+      <div class="qnum" id="qnum"></div>
+      <p class="qtext" id="qtext"></p>
+      <p class="qhint hidden" id="qhint"></p>
+    </div>
+    <div class="answers" id="answers"></div>
+    <div class="explain hidden" id="explain"></div>
+    <button class="btn hidden" id="next"></button>
+  </section>
+
+  <!-- Ergebnis -->
+  <section id="end" class="hidden">
+    <div class="score" id="scoreNum"></div>
+    <h1 id="endHead"></h1>
+    <p class="lede" id="endText"></p>
+    <ul class="review" id="review"></ul>
+    <button class="btn ghost" id="again">Noch einmal spielen</button>
+  </section>
+
+</div>
+
+<script>
+const FRAGEN = [
+  {
+    q: "Ein Unternehmen besitzt eine Lagerhalle, Rohstoffe im Lager und Geld auf dem Bankkonto. Wo steht das alles in der Bilanz?",
+    a: ["Links, auf der Aktivseite", "Rechts, auf der Passivseite", "Verteilt auf beide Seiten", "Gar nicht — das steht in der GuV"],
+    r: 0,
+    ok: "Sitzt.",
+    no: "Knapp daneben.",
+    e: "Links steht, <em>worin</em> das Geld steckt: Gebäude, Rohstoffe, Bankguthaben. Rechts steht, <em>woher</em> es kommt: Eigenkapital und Schulden. Beide Seiten sind immer gleich hoch."
+  },
+  {
+    q: "Was gehört nicht zum Anlagevermögen?",
+    a: ["Der Firmenwagen", "Die Fabrikhalle", "Die Rohstoffe im Lager", "Die Fertigungsmaschine"],
+    r: 2,
+    ok: "Genau.",
+    no: "Fast.",
+    e: "Anlagevermögen bleibt dem Betrieb länger erhalten. Rohstoffe wandern dagegen in die Produktion und sind bald weg — sie laufen durchs Unternehmen und heißen deshalb Umlaufvermögen."
+  },
+  {
+    q: "Ein Betrieb zahlt 40.000 € Löhne und verkauft Waren für 100.000 €. Wo landen diese beiden Beträge?",
+    a: ["Beide in der Bilanz", "Beide in der GuV", "Löhne in der Bilanz, Umsatz in der GuV", "Umsatz in der Bilanz, Löhne in der GuV"],
+    r: 1,
+    ok: "Richtig.",
+    no: "Nicht ganz.",
+    e: "Aufwand und Ertrag gehören in die Gewinn- und Verlustrechnung. Die Bilanz zeigt nur, was am Stichtag da ist — nicht, was im Lauf des Jahres passiert ist."
+  },
+  {
+    q: "Eine Maschine kostet 60.000 €, sie wird fünf Jahre genutzt und gleichmäßig abgeschrieben. Mit welchem Wert steht sie nach zwei Jahren in der Bilanz?",
+    a: ["60.000 €", "36.000 €", "24.000 €", "12.000 €"],
+    r: 1,
+    ok: "Gerechnet und getroffen.",
+    no: "Rechnen wir nach.",
+    e: "60.000 € auf fünf Jahre sind 12.000 € pro Jahr. Nach zwei Jahren sind 24.000 € abgeschrieben, übrig bleiben 36.000 €. Diesen Restwert nennt man Buchwert."
+  },
+  {
+    q: "Ein Betrieb kauft Rohstoffe für 5.000 €, bekommt 10 % Rabatt und zahlt 200 € Fracht. Mit welchem Betrag geht die Lieferung ins Lager?",
+    a: ["5.200 €", "5.000 €", "4.700 €", "4.500 €"],
+    r: 2,
+    ok: "Perfekt.",
+    no: "Ein Posten ist verrutscht.",
+    e: "5.000 € minus 500 € Rabatt sind 4.500 €, plus 200 € Fracht macht 4.700 €. Merksatz: Kaufpreis minus alles, was er günstiger wird, plus alles, was nötig war, um die Ware betriebsbereit zu bekommen."
+  },
+  {
+    q: "Ein Café verkauft im Jahr Kaffee und Kuchen für 200.000 €. Miete, Personal, Zutaten und Strom kosten zusammen 185.000 €. Welche Aussage stimmt?",
+    a: ["Der Umsatz beträgt 15.000 €", "Der Gewinn beträgt 200.000 €", "Der Umsatz beträgt 200.000 €, der Gewinn 15.000 €", "Umsatz und Gewinn sind zwei Wörter für dasselbe"],
+    r: 2,
+    ok: "Genau so ist es.",
+    no: "Die beiden werden gern verwechselt.",
+    e: "Der Umsatz ist alles, was hereinkommt. Der Gewinn ist, was nach Abzug aller Aufwendungen übrig bleibt — hier gerade einmal 15.000 €, also 7,5 % vom Umsatz. Genau diesen Weg vom Umsatz zum Gewinn zeigt die Gewinn- und Verlustrechnung, Zeile für Zeile. Ein großer Umsatz sagt deshalb noch nichts darüber, ob ein Unternehmen gut dasteht."
+  },
+  {
+    q: "Ein Unternehmen hat vor Jahren ein Grundstück für 200.000 € gekauft. Heute ist es 350.000 € wert. Was meinen Sie: Welcher Wert steht in der Bilanz?",
+    a: ["350.000 €, es ist ja mehr wert", "200.000 €", "Der Mittelwert, 275.000 €", "Das darf das Unternehmen frei entscheiden"],
+    r: 1,
+    ok: "Stark — damit liegen Sie vor den meisten.",
+    no: "Willkommen im Klub, die Mehrheit tippt hier falsch.",
+    e: "Zur Wahl stehen zwei Werte: die 200.000 € von damals und die 350.000 € von heute. Angesetzt wird der niedrigere — das ist das Niederstwertprinzip. Dahinter steckt die kaufmännische Vorsicht: Die zusätzlichen 150.000 € hat das Unternehmen ja noch gar nicht in der Hand, sie stünden nur auf dem Papier."
+  },
+  {
+    q: "Das Handelsrecht will vor allem die Gläubiger eines Unternehmens schützen. Wer ist damit gemeint?",
+    a: ["Die Eigentümer, bei einer AG also die Aktionäre", "Alle, die dem Unternehmen Geld geliehen oder auf Rechnung geliefert haben", "Die Kunden, die im Laden bar bezahlt haben", "Die Konkurrenz am Markt"],
+    r: 1,
+    ok: "Auf den Punkt.",
+    no: "Knapp daneben.",
+    e: "Gläubiger ist, wer vom Unternehmen noch etwas zu bekommen hat — die Bank mit ihrem Kredit, der Lieferant mit seiner offenen Rechnung. Sie tragen ein Risiko, ohne im Unternehmen mitreden zu können, und sie kennen die Lage nur aus der Bilanz. Deshalb muss diese eher zu vorsichtig als zu optimistisch sein. Die Aktionäre stehen auf der anderen Seite: Sie sind Eigentümer, tragen das Risiko bewusst — und bekommen erst etwas, wenn alle Gläubiger bedient sind."
+  },
+  {
+    q: "Jetzt wird geschätzt: Die Krones AG baut komplette Abfüllanlagen für Brauereien und Getränkehersteller in aller Welt, beschäftigt rund 9.900 Menschen und ist an der Börse notiert. Wie viel Umsatz macht so ein Unternehmen im Jahr?",
+    a: ["Rund 3 Millionen €", "Rund 300 Millionen €", "Rund 3 Milliarden €", "Rund 30 Milliarden €"],
+    r: 2,
+    ok: "Gutes Gespür für Größenordnungen.",
+    no: "Um einiges daneben.",
+    e: "3,25 Milliarden Euro. Abschätzen lässt sich das über die Beschäftigten: Im Maschinenbau erwirtschaftet eine Mitarbeiterin oder ein Mitarbeiter grob 300.000 € Umsatz im Jahr — mal 9.900 ergibt rund drei Milliarden. Genau diesen Jahresabschluss sehen wir uns in den nächsten Stunden im Original an."
+  },
+  {
+    q: "Eine AG hat am Jahresende Gewinn gemacht. Wer entscheidet, ob er ausgeschüttet wird?",
+    a: ["Der Vorstand", "Der Aufsichtsrat", "Die Hauptversammlung, also die Aktionäre", "Das Finanzamt"],
+    r: 2,
+    ok: "Richtig.",
+    no: "Knapp vorbei.",
+    e: "Der Vorstand macht nur einen Vorschlag. Entscheiden dürfen die Eigentümer — die Aktionäre auf der Hauptversammlung. Krones schlägt für 2025 eine Dividende von 2,80 € je Aktie vor."
+  }
+];
+
+let i = 0, punkte = 0, verlauf = [];
+const $ = id => document.getElementById(id);
+
+function zeigen(el){ ["start","quiz","end"].forEach(s => $(s).classList.toggle("hidden", s !== el)); }
+
+function rail(){
+  $("rail").innerHTML = FRAGEN.map((_, n) =>
+    `<span class="tick ${n < i ? "done" : n === i ? "now" : ""}"></span>`).join("");
+}
+
+function frage(){
+  const f = FRAGEN[i];
+  rail();
+  $("meta").textContent = `Frage ${i + 1} von ${FRAGEN.length} · ${punkte} richtig`;
+  $("qnum").textContent = `Frage ${i + 1}`;
+  $("qtext").textContent = f.q;
+  $("explain").classList.add("hidden");
+  $("next").classList.add("hidden");
+  $("answers").innerHTML = "";
+  f.a.forEach((text, n) => {
+    const b = document.createElement("button");
+    b.className = "a";
+    b.innerHTML = `<span class="key">${"ABCD"[n]}</span><span>${text}</span>`;
+    b.onclick = () => antwort(n);
+    $("answers").appendChild(b);
+  });
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+function antwort(n){
+  const f = FRAGEN[i];
+  const richtig = n === f.r;
+  if (richtig) punkte++;
+  verlauf.push(richtig);
+
+  [...$("answers").children].forEach((b, k) => {
+    b.disabled = true;
+    if (k === f.r) b.classList.add("right");
+    else if (k === n) b.classList.add("wrong");
+  });
+
+  $("explain").innerHTML =
+    `<span class="verdict ${richtig ? "ok" : "no"}">${richtig ? f.ok : f.no}</span>${f.e}`;
+  $("explain").classList.remove("hidden");
+  $("meta").textContent = `Frage ${i + 1} von ${FRAGEN.length} · ${punkte} richtig`;
+  $("next").textContent = i === FRAGEN.length - 1 ? "Auswertung ansehen" : "Nächste Frage";
+  $("next").classList.remove("hidden");
+}
+
+function ende(){
+  zeigen("end");
+  $("scoreNum").innerHTML = `${punkte}<span> von ${FRAGEN.length}</span>`;
+  let kopf, text;
+  const TEXTE = {
+    10: ["Zehn von zehn. Herr Herold verneigt sich.",
+         "Mehr geht nicht. Umso gespannter darfst Du auf die Stellen sein, an denen es doch komplizierter wird."],
+    9:  ["Neun Treffer, das ist stark!",
+         "Herr Herold ist beeindruckt – und zwar bei Fragen, die zum Teil erst noch drankommen."],
+    8:  ["Acht von zehn. Herr Herold ist stolz auf Dich!",
+         "Das ist eine richtig gute Leistung für einen Einstieg."],
+    7:  ["Sieben richtig – gute Leistung, sagt Herr Herold.",
+         "Die hinteren Fragen greifen absichtlich vor. Sieben Treffer heißt: Du bringst einiges mit."],
+    6:  ["Sechs Treffer, Herr Herold nickt zufrieden.",
+         "Mehr als die Hälfte sitzt schon, bevor der Lernbereich überhaupt begonnen hat."],
+    5:  ["Die Hälfte geschafft. Herr Herold sagt: gute Ausgangslage.",
+         "Genau die Fragen, bei denen es gehakt hat, nehmen wir uns als Erstes vor."],
+    4:  ["Vier richtig, und Herr Herold hat schon einen Plan.",
+         "Da ist noch Luft – und die füllen wir in den nächsten Wochen gemeinsam."],
+    3:  ["Drei Treffer. Herr Herold sagt: dafür fangen wir ja an.",
+         "Einiges war Erinnerung, einiges kommt erst. Beides holen wir uns."],
+    2:  ["Zwei richtig – Herr Herold freut sich.",
+         "So viel Neues, das auf Dich wartet. Beim nächsten Mal sieht das anders aus."],
+    1:  ["Ein Treffer, und Herr Herold nimmt das als Auftrag.",
+         "Diese Antworten kennt man nicht, man lernt sie. Genau dafür sind wir hier."],
+    0:  ["Null Punkte, dafür maximales Steigerungspotenzial.",
+         "Herr Herold legt los. Am Ende des Lernbereichs beantwortest Du diese zehn Fragen im Schlaf."]
+  };
+  kopf = TEXTE[punkte][0];
+  text = TEXTE[punkte][1];
+  $("endHead").textContent = kopf;
+  $("endText").textContent = text;
+  $("review").innerHTML = FRAGEN.map((f, n) =>
+    `<li><span class="mark ${verlauf[n] ? "ok" : "no"}">${verlauf[n] ? "✓" : "✗"}</span>
+     <span>${f.q}</span></li>`).join("");
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+$("go").onclick = () => { zeigen("quiz"); frage(); };
+$("next").onclick = () => { i++; i < FRAGEN.length ? frage() : ende(); };
+$("again").onclick = () => { i = 0; punkte = 0; verlauf = []; zeigen("quiz"); frage(); };
+</script>
+</body>
+</html>

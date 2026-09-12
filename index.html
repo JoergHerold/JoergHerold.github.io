@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Interaktive Übungen</title>
+<style>
+:root{
+  --ink:#14213A; --ink-soft:#4A5A79; --paper:#EFF1F6; --card:#FFFFFF;
+  --rule:#C9D0DE; --navy:#1F3864; --gold:#B07D14;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#E8ECF4; --ink-soft:#A3AFC6; --paper:#10141F; --card:#1A2032;
+    --rule:#333D55; --navy:#93B0E0; --gold:#E2B95C;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#E8ECF4; --ink-soft:#A3AFC6; --paper:#10141F; --card:#1A2032;
+  --rule:#333D55; --navy:#93B0E0; --gold:#E2B95C;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"Segoe UI Variable Display","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",Arial,sans-serif;
+  line-height:1.5; -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:44rem;margin:0 auto;padding:1.8rem 1.1rem 3rem}
+header{border-bottom:2px solid var(--navy);padding-bottom:1.1rem;margin-bottom:1.6rem}
+h1{font-size:clamp(1.7rem,6.5vw,2.4rem);font-weight:800;letter-spacing:-.028em;line-height:1.1;margin:0 0 .35rem}
+.sub{color:var(--ink-soft);margin:0;font-size:1rem}
+.item{
+  display:block;background:var(--card);border:1px solid var(--rule);border-left:5px solid var(--navy);
+  border-radius:.5rem;padding:1rem;margin-bottom:.7rem;text-decoration:none;color:inherit;
+  transition:border-color .15s;
+}
+.item:hover,.item:focus-visible{border-left-color:var(--gold)}
+.item:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.item b{display:block;font-size:1.12rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.18rem}
+.item span{display:block;font-size:.94rem;color:var(--ink-soft)}
+.note{margin-top:1.6rem;color:var(--ink-soft);font-size:.94rem}
+footer{margin-top:2.6rem;padding-top:1rem;border-top:1px solid var(--rule);color:var(--ink-soft);font-size:.88rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Interaktive Übungen</h1>
+    <p class="sub">Quiz und Übungsmaterial zum Unterricht · FOSBOS Bamberg</p>
+  </header>
+
+  <a class="item" href="bwr12/">
+    <b>Betriebswirtschaftslehre mit Rechnungswesen 12</b>
+    <span>Vier Lernbereiche, vom Jahresabschluss bis zum Marketing</span>
+  </a>
+
+  <!-- Weiteren Kurs ergänzen: diesen Block kopieren, Ordnernamen und Texte anpassen.
+  <a class="item" href="ordnername/">
+    <b>Name des Fachs und der Jahrgangsstufe</b>
+    <span>Kurze Beschreibung in einer Zeile</span>
+  </a>
+  -->
+
+  <p class="note">Jeder Kurs hat eine eigene Seite mit allen Übungen, die bisher dazugekommen sind.</p>
+
+  <footer>
+    Alle Übungen laufen im Browser, ohne Anmeldung und ohne dass Daten das Gerät verlassen.
+  </footer>
+
+</div>
+</body>
+</html>

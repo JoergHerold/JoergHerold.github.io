@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Die Fahrradwerkstatt der SMV</title>
+<style>
+:root{
+  --ink:#14213A; --ink-soft:#4A5A79; --paper:#EFF1F6; --card:#FFFFFF;
+  --rule:#C9D0DE; --navy:#1F3864; --gold:#B07D14;
+  --wrong:#A03A3A; --wrong-bg:#F6E6E6; --right:#1B6B4C; --right-bg:#E4F1EA;
+  --bar-ab:#8FA6CC; --bar-ein:#1F3864; --bar-verb:#C98A3A; --bar-sb:#1B6B4C;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#E8ECF4; --ink-soft:#A3AFC6; --paper:#10141F; --card:#1A2032;
+    --rule:#333D55; --navy:#93B0E0; --gold:#E2B95C;
+    --wrong:#E99494; --wrong-bg:#3A2020; --right:#6FD3A5; --right-bg:#17352A;
+    --bar-ab:#4A6FA5; --bar-ein:#93B0E0; --bar-verb:#D9A75F; --bar-sb:#6FD3A5;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#E8ECF4; --ink-soft:#A3AFC6; --paper:#10141F; --card:#1A2032;
+  --rule:#333D55; --navy:#93B0E0; --gold:#E2B95C;
+  --wrong:#E99494; --wrong-bg:#3A2020; --right:#6FD3A5; --right-bg:#17352A;
+  --bar-ab:#4A6FA5; --bar-ein:#93B0E0; --bar-verb:#D9A75F; --bar-sb:#6FD3A5;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"Segoe UI Variable Display","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",Arial,sans-serif;
+  line-height:1.5; -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:60rem;margin:0 auto;padding:1.4rem 1.1rem 3rem}
+h1{font-size:clamp(1.7rem,5vw,2.6rem);font-weight:800;letter-spacing:-.025em;line-height:1.1;margin:0 0 .5rem}
+.lede{font-size:clamp(1.05rem,2.2vw,1.22rem);margin:0 0 1rem;max-width:48rem}
+h2{font-size:1.05rem;font-weight:700;color:var(--navy);margin:0 0 .7rem}
+
+.fakten{display:flex;gap:.7rem;flex-wrap:wrap;margin:0 0 1.4rem}
+.fakt{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--navy);
+  border-radius:.45rem;padding:.55rem .85rem}
+.fakt b{display:block;font-size:1.25rem;font-weight:800;letter-spacing:-.02em}
+.fakt span{font-size:.88rem;color:var(--ink-soft)}
+
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:.6rem;padding:1.1rem;margin-bottom:1rem}
+.panel.accent{border-left:5px solid var(--navy)}
+
+.opts{display:flex;flex-direction:column;gap:.5rem;margin-top:.8rem}
+@media(min-width:40rem){.opts{flex-direction:row}}
+.opt{flex:1;background:var(--paper);border:1.5px solid var(--rule);border-radius:.5rem;
+  padding:.8rem .9rem;font:inherit;font-size:1rem;color:inherit;cursor:pointer;text-align:left}
+.opt:hover:not(:disabled){border-color:var(--navy)}
+.opt:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.opt.sel{border-color:var(--navy);background:var(--card)}
+.verdict{margin-top:.9rem;border-left:3px solid var(--gold);padding-left:.8rem;font-size:1rem}
+
+.tabs{display:flex;gap:.4rem;margin-bottom:1rem}
+.tab{flex:1;padding:.7rem;border:1.5px solid var(--rule);background:var(--card);border-radius:.5rem;
+  font:inherit;font-weight:700;font-size:1rem;color:var(--ink-soft);cursor:pointer}
+.tab[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+:root[data-theme="dark"] .tab[aria-selected="true"]{color:#0F1320}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tab[aria-selected="true"]{color:#0F1320}}
+
+.sliderrow{display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap;margin-bottom:.4rem}
+.sliderval{font-size:1.6rem;font-weight:800;color:var(--navy);letter-spacing:-.02em}
+input[type=range]{width:100%;accent-color:var(--navy);height:1.9rem}
+.hint{font-size:.95rem;color:var(--ink-soft)}
+
+.bar{display:flex;height:2.3rem;border-radius:.4rem;overflow:hidden;margin:.45rem 0 .25rem;border:1px solid var(--rule)}
+.seg{display:grid;place-items:center;font-size:.82rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden}
+.legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.86rem;color:var(--ink-soft)}
+.legend i{display:inline-block;width:.7rem;height:.7rem;border-radius:.15rem;margin-right:.3rem}
+
+.cards{display:grid;gap:.8rem;grid-template-columns:1fr;margin-top:.4rem}
+@media(min-width:42rem){.cards{grid-template-columns:1fr 1fr}}
+.gcard{border:2px solid var(--rule);border-radius:.6rem;padding:1rem;background:var(--card)}
+.gcard.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+.gcard.good{border-color:var(--right);background:var(--right-bg)}
+.gtitle{font-size:.95rem;font-weight:700;margin-bottom:.1rem}
+.gsub{font-size:.88rem;color:var(--ink-soft);margin-bottom:.5rem}
+.gval{font-size:clamp(1.9rem,5.5vw,2.8rem);font-weight:800;letter-spacing:-.03em;line-height:1}
+.gcard.bad .gval{color:var(--wrong)}
+.gcard.good .gval{color:var(--right)}
+.tag{display:inline-block;font-size:.78rem;font-weight:700;padding:.1rem .45rem;border-radius:.25rem;margin-top:.5rem}
+.gcard.bad .tag{background:var(--wrong);color:#fff}
+.gcard.good .tag{background:var(--right);color:#fff}
+
+.wege{display:grid;gap:1rem;grid-template-columns:1fr}
+@media(min-width:44rem){.wege{grid-template-columns:1fr 1fr}}
+.weg{background:var(--paper);border:1px solid var(--rule);border-radius:.5rem;padding:.8rem .9rem}
+.wtitle{font-size:.92rem;font-weight:700;color:var(--navy);margin-bottom:.4rem}
+table{width:100%;border-collapse:collapse;font-size:1rem}
+td{padding:.3rem 0}
+td.op{width:1.6rem;text-align:center;font-weight:700;color:var(--ink-soft)}
+td.val{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:.6rem}
+tr.sum td{border-top:1px solid var(--rule)}
+tr.tot td{border-top:2px solid var(--navy);font-weight:800;padding-top:.4rem}
+tr.tot td.val{color:var(--right)}
+tr.gap td{height:.7rem;padding:0}
+
+.btn{display:inline-block;padding:.75rem 1.2rem;border:none;border-radius:.5rem;background:var(--navy);
+  color:#fff;font:inherit;font-size:1rem;font-weight:700;cursor:pointer;margin-top:.8rem}
+:root[data-theme="dark"] .btn{color:#0F1320}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#0F1320}}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--rule);font-weight:500}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+.merk{border-left:5px solid var(--gold)}
+.merk p{margin:.3rem 0}
+.hidden{display:none}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Die Fahrradwerkstatt der SMV</h1>
+  <p class="lede">Die SMV repariert Fahrräder. Für jede Reparatur wird ein Schlauch eingebaut –
+    gearbeitet wird ehrenamtlich, die Schläuche sind also die einzigen Kosten.
+    Was nicht verbaut wird, bleibt im Regal und wartet auf die nächste Reparatur.</p>
+
+  <div class="fakten">
+    <div class="fakt"><b>8,00 €</b><span>Einkaufspreis je Schlauch</span></div>
+    <div class="fakt"><b>15,00 €</b><span>Preis je Reparatur</span></div>
+  </div>
+
+  <section class="panel accent" id="frage">
+    <h2>Zuerst eine Vermutung</h2>
+    <p style="margin:.2rem 0 0">Im Jahr 2025 führt die SMV 28 Reparaturen durch und nimmt dafür 420,00 € ein.
+      Sie kauft 40 Schläuche für 320,00 € – also bleibt ein Gewinn von 100,00 €.</p>
+    <p style="margin:.6rem 0 0"><b>Was passiert mit dem Gewinn, wenn die SMV im selben Jahr 60 Schläuche
+      kauft statt 40 – und trotzdem genau 28 Reparaturen durchführt?</b></p>
+    <div class="opts" id="opts">
+      <button class="opt" data-k="0">Der Gewinn sinkt um 160,00 €</button>
+      <button class="opt" data-k="1">Der Gewinn bleibt gleich</button>
+      <button class="opt" data-k="2">Der Gewinn steigt um 160,00 €</button>
+    </div>
+    <div class="verdict hidden" id="verdict"></div>
+    <button class="btn hidden" id="go">Ausprobieren</button>
+  </section>
+
+  <section id="sim" class="hidden">
+
+    <div class="tabs" role="tablist">
+      <button class="tab" id="t2025" role="tab" aria-selected="true">Jahr 2025 — leeres Regal zu Beginn</button>
+      <button class="tab" id="t2026" role="tab" aria-selected="false">Jahr 2026 — mit Anfangsbestand</button>
+    </div>
+
+    <div class="panel">
+      <h2>Wie viele Schläuche kauft die SMV ein?</h2>
+      <div class="sliderrow">
+        <span class="sliderval" id="stk">40 Schläuche</span>
+        <span class="hint" id="stkEuro">= 320,00 € Einkauf</span>
+      </div>
+      <input type="range" id="slider" min="0" max="60" step="1" value="40"
+             aria-label="Eingekaufte Schläuche">
+      <p class="hint" id="fix"></p>
+
+      <div class="bar" id="bar"></div>
+      <div class="bar" id="bar2"></div>
+      <div class="legend">
+        <span><i style="background:var(--bar-ab)"></i>Anfangsbestand</span>
+        <span><i style="background:var(--bar-ein)"></i>Einkauf</span>
+        <span><i style="background:var(--bar-verb)"></i>verbaut</span>
+        <span><i style="background:var(--bar-sb)"></i>Schlussbestand</span>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="gcard bad">
+        <div class="gtitle">So rechnet die SMV</div>
+        <div class="gsub">Umsatz − <b>Einkauf</b></div>
+        <div class="gval" id="g1">100,00 €</div>
+        <div class="tag">falsch</div>
+      </div>
+      <div class="gcard good">
+        <div class="gtitle">So rechnet die GuV</div>
+        <div class="gsub">Umsatz − <b>Verbrauch</b></div>
+        <div class="gval" id="g2">196,00 €</div>
+        <div class="tag">richtig</div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:1rem">
+      <h2>Zwei Wege zum selben Gewinn</h2>
+      <div class="wege">
+        <div class="weg">
+          <div class="wtitle">Weg 1 — über den Verbrauch</div>
+          <table id="wegA"></table>
+        </div>
+        <div class="weg">
+          <div class="wtitle">Weg 2 — so rechnet die Buchführung</div>
+          <table id="wegB"></table>
+        </div>
+      </div>
+      <button class="btn ghost" id="merkBtn">Was heißt das?</button>
+    </div>
+
+    <div class="panel merk hidden" id="merk">
+      <h2>Merke</h2>
+      <p><b>Nicht der Einkauf mindert den Gewinn, sondern der Verbrauch.</b></p>
+      <p>Verbrauch = Anfangsbestand + Zugänge − Schlussbestand</p>
+      <p>Bestandsveränderung = Schlussbestand − Anfangsbestand</p>
+      <p>Eine <b>Bestandsmehrung</b> verringert den Aufwand und verbessert das Ergebnis.</p>
+      <p>Eine <b>Bestandsminderung</b> erhöht den Aufwand und verschlechtert das Ergebnis.</p>
+      <p style="margin-top:.8rem;color:var(--ink-soft)">Als Aufwand wird also nicht der Einkauf erfasst,
+        sondern der Verbrauch. Die Bestandsveränderung ist die Korrektur vom einen zum anderen.</p>
+    </div>
+
+  </section>
+</div>
+
+<script>
+const EK = 8, ERLOES = 15;
+const JAHRE = { 2025: { ab: 0, rep: 28 }, 2026: { ab: 12, rep: 25 } };
+const MIN = 0, MAX = 60, START = 40;
+let jahr = 2025;
+
+const $ = id => document.getElementById(id);
+const eur = n => n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+const st = n => n.toLocaleString("de-DE") + (n === 1 ? " Stück" : " Stück");
+
+function daten(){
+  const j = JAHRE[jahr];
+  const ein = +$("slider").value;
+  const verfuegbar = j.ab + ein;
+  const rep = Math.min(j.rep, verfuegbar);
+  const sb = verfuegbar - rep;
+  return {
+    j, ein, rep, knapp: rep < j.rep, noetig: Math.max(0, j.rep - j.ab),
+    umsatz: rep * ERLOES,
+    einkaufEuro: ein * EK,
+    abEuro: j.ab * EK,
+    verfuegbar, verfuegbarEuro: verfuegbar * EK,
+    verbrauchEuro: rep * EK,
+    sb, sbEuro: sb * EK
+  };
+}
+
+function balken(d){
+  const gesamt = Math.max(1, d.verfuegbar);
+  const render = arr => arr.filter(t => t[1] > 0).map(([c, v, l]) =>
+    '<div class="seg" style="background:' + c + ';flex:' + v + '">'
+    + (v >= gesamt * 0.16 ? l + " " + v : "") + '</div>').join("");
+  $("bar").innerHTML = render([
+    ["var(--bar-ab)", d.j.ab, "Anfangsbestand"],
+    ["var(--bar-ein)", d.ein, "Einkauf"]
+  ]);
+  $("bar2").innerHTML = render([
+    ["var(--bar-verb)", d.rep, "verbaut"],
+    ["var(--bar-sb)", d.sb, "Schlussbestand"]
+  ]);
+}
+
+function zeichne(){
+  const d = daten();
+  const g1 = d.umsatz - d.einkaufEuro;
+  const g2 = d.umsatz - d.verbrauchEuro;
+  const bv = d.sbEuro - d.abEuro;
+
+  $("stk").textContent = d.ein + (d.ein === 1 ? " Schlauch" : " Schläuche");
+  $("stkEuro").textContent = "= " + eur(d.einkaufEuro) + " Einkauf";
+  $("fix").innerHTML = d.knapp
+    ? "<b>Die Schläuche reichen nur für " + d.rep + " Reparaturen</b> (" + eur(d.umsatz)
+      + " Umsatz). Ab " + d.noetig + " Schläuchen sind alle " + d.j.rep + " Reparaturen möglich."
+    : d.rep + " Reparaturen, " + eur(d.umsatz) + " Umsatz, " + d.rep + " Schläuche verbaut."
+      + (d.j.ab > 0 ? " Anfangsbestand: " + st(d.j.ab) + " (" + eur(d.abEuro) + ")." : "");
+
+  balken(d);
+  $("g1").textContent = eur(g1);
+  $("g2").textContent = eur(g2);
+
+  const z = (op, label, wert, cls) =>
+    '<tr class="' + (cls || "") + '"><td class="op">' + op + '</td><td>' + label
+    + '</td><td class="val">' + wert + '</td></tr>';
+
+  $("wegA").innerHTML =
+    z("", "Anfangsbestand", eur(d.abEuro)) +
+    z("+", "Einkauf", eur(d.einkaufEuro)) +
+    z("=", "stand zur Verfügung", eur(d.verfuegbarEuro), "sum") +
+    z("–", "Schlussbestand", eur(d.sbEuro)) +
+    z("=", "<b>Verbrauch</b>", "<b>" + eur(d.verbrauchEuro) + "</b>", "sum") +
+    '<tr class="gap"><td colspan="3"></td></tr>' +
+    z("", "Umsatzerlöse", eur(d.umsatz)) +
+    z("–", "Verbrauch", eur(d.verbrauchEuro)) +
+    z("=", "Gewinn", eur(g2), "tot");
+
+  const bvLabel = bv > 0 ? "Bestandsmehrung" : bv < 0 ? "Bestandsminderung" : "Bestandsveränderung";
+  $("wegB").innerHTML =
+    z("", "Umsatzerlöse", eur(d.umsatz)) +
+    z(bv < 0 ? "–" : "+", bvLabel, eur(Math.abs(bv))) +
+    z("–", "Einkauf der Schläuche", eur(d.einkaufEuro)) +
+    z("=", "Gewinn", eur(g2), "tot") +
+    '<tr class="gap"><td colspan="3"></td></tr>' +
+    '<tr><td class="op"></td><td colspan="2" style="color:var(--ink-soft);font-size:.9rem">'
+    + "Bestandsveränderung = Schlussbestand " + eur(d.sbEuro) + " – Anfangsbestand "
+    + eur(d.abEuro) + " = " + (bv >= 0 ? "+ " : "– ") + eur(Math.abs(bv)) + '</td></tr>';
+}
+
+function setJahr(y){
+  jahr = y;
+  const s = $("slider");
+  s.min = MIN; s.max = MAX; s.value = START;
+  $("t2025").setAttribute("aria-selected", y === 2025);
+  $("t2026").setAttribute("aria-selected", y === 2026);
+  zeichne();
+}
+
+document.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".opt").forEach(x => { x.classList.remove("sel"); x.disabled = true; });
+  b.classList.add("sel");
+  $("verdict").innerHTML = +b.dataset.k === 1
+    ? "<b>Richtig.</b> Der Gewinn bleibt bei 196,00 € – gleichgültig, wie viele Schläuche gekauft werden. Schauen wir uns an, warum."
+    : "<b>Nicht ganz.</b> Die SMV macht gleich viele Reparaturen und verbaut gleich viele Schläuche. Warum sollte sich der Gewinn ändern? Probieren Sie es aus.";
+  $("verdict").classList.remove("hidden");
+  $("go").classList.remove("hidden");
+});
+
+$("go").onclick = () => {
+  $("sim").classList.remove("hidden");
+  $("go").classList.add("hidden");
+  $("sim").scrollIntoView({ behavior: "smooth", block: "start" });
+};
+$("slider").oninput = zeichne;
+$("t2025").onclick = () => setJahr(2025);
+$("t2026").onclick = () => setJahr(2026);
+$("merkBtn").onclick = () => { $("merk").classList.remove("hidden"); $("merkBtn").classList.add("hidden"); };
+
+setJahr(2025);
+</script>
+</body>
+</html>

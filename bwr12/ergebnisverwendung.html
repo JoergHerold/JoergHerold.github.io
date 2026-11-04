@@ -106,6 +106,10 @@ input.num.bad{border-color:var(--wrong);background:var(--wrong-bg)}
 .ekrow input.num{width:11rem;flex:0 0 11rem;padding:.4rem .5rem;font-size:.98rem}
 .ekrow .fix{font-variant-numeric:tabular-nums;color:var(--ink-soft);padding-right:.5rem}
 .ekrow.c-teil{background:var(--teil)}
+.ekrow.c-vor{background:var(--vor)}
+.ekrow .fix small{font-size:.75rem;font-style:italic}
+.ekcards.one{grid-template-columns:1fr}
+@media(max-width:30rem){.ekrow input.num{width:8.8rem;flex:0 0 8.8rem}.ekrow{font-size:.88rem}}
 .ekrow.c-voll{background:var(--voll)}
 .ekrow.sumrow{border-top:1.5px solid var(--ink)}
 .legend{font-size:.82rem;color:var(--ink-soft);margin:.2rem 0 .4rem}
@@ -124,12 +128,12 @@ input.num.bad{border-color:var(--wrong);background:var(--wrong-bg)}
 <div class="wrap">
   <h1>Ergebnisverwendung trainieren</h1>
   <p class="lede">Jeder Fall ist neu gewürfelt. Rechne Schritt für Schritt wie in der Abschlussprüfung:
-    gesetzliche Rücklage nach § 150 AktG, andere Gewinnrücklagen, Ergebnisverwendungsrechnung mit Stückdividende
+    gesetzliche Rücklage nach § 150 AktG, andere Gewinnrücklagen, Ergebnisverwendungsrechnung mit Stückdividende
     und zum Schluss das Eigenkapital in der Bilanz.</p>
 
   <div class="tabs" role="tablist" id="tabs">
     <button class="tab" role="tab" data-l="1" aria-selected="true">Stufe 1<small>Grundfall mit Gewinnvortrag</small></button>
-    <button class="tab" role="tab" data-l="2" aria-selected="false">Stufe 2<small>Verlustvortrag und § 58 AktG</small></button>
+    <button class="tab" role="tab" data-l="2" aria-selected="false">Stufe 2<small>Verlustvortrag und § 58 AktG</small></button>
     <button class="tab" role="tab" data-l="3" aria-selected="false">Stufe 3<small>Entnahme aus anderen Gewinnrücklagen</small></button>
   </div>
   <div class="topline">
@@ -142,8 +146,8 @@ input.num.bad{border-color:var(--wrong);background:var(--wrong-bg)}
 
   <section class="panel merk">
     <h2>Merke</h2>
-    <p><b>§ 150 AktG:</b> der kleinere Wert aus Fehlbetrag (10 % des gezeichneten Kapitals minus Kapitalrücklage und gesetzliche Rücklage) und 5 % vom Jahresüberschuss abzüglich Verlustvortrag. Ein Gewinnvortrag zählt nicht.</p>
-    <p><b>§ 58 Abs. 2 AktG:</b> höchstens 50 % von (Jahresüberschuss minus Verlustvortrag minus Einstellung in die gesetzliche Rücklage).</p>
+    <p><b>§ 150 AktG:</b> der kleinere Wert aus Fehlbetrag (10 % des gezeichneten Kapitals minus Kapitalrücklage und gesetzliche Rücklage) und 5 % vom Jahresüberschuss abzüglich Verlustvortrag. Ein Gewinnvortrag zählt nicht.</p>
+    <p><b>§ 58 Abs. 2 AktG:</b> höchstens 50 % von (Jahresüberschuss minus Verlustvortrag minus Einstellung in die gesetzliche Rücklage).</p>
     <p><b>Stückdividende:</b> Bilanzgewinn durch Anzahl der Aktien, immer abrunden nach Vorgabe. Anzahl der Aktien = gezeichnetes Kapital durch Nennwert.</p>
     <p><b>Eigenkapital:</b> nach teilweiser Ergebnisverwendung so hoch wie vorher, nach vollständiger Ergebnisverwendung um die Dividende niedriger. Die Kapitalrücklage bleibt immer unverändert.</p>
   </section>
@@ -244,13 +248,13 @@ function caseHtml() {
     ["Andere Gewinnrücklagen", c.agr0], vorz, ["Jahresüberschuss", c.ju]];
   let vorgabe;
   if (c.L === 1) vorgabe = `Vorstand und Aufsichtsrat stellen <b>${eur(c.a)}</b> in die anderen Gewinnrücklagen ein. Der verbleibende Bilanzgewinn wird als höchstmögliche Stückdividende <b>${ruleTxt[c.rule]}</b> ausgeschüttet.`;
-  else if (c.L === 2) vorgabe = `Vorstand und Aufsichtsrat stellen den nach § 58 Abs. 2 AktG <b>höchstmöglichen Betrag</b> in die anderen Gewinnrücklagen ein. Der verbleibende Bilanzgewinn wird als höchstmögliche Stückdividende <b>${ruleTxt[c.rule]}</b> ausgeschüttet.`;
+  else if (c.L === 2) vorgabe = `Vorstand und Aufsichtsrat stellen den nach § 58 Abs. 2 AktG <b>höchstmöglichen Betrag</b> in die anderen Gewinnrücklagen ein. Der verbleibende Bilanzgewinn wird als höchstmögliche Stückdividende <b>${ruleTxt[c.rule]}</b> ausgeschüttet.`;
   else vorgabe = `Der Jahresüberschuss ist stark gesunken. Trotzdem soll die Stückdividende des Vorjahres von <b>${eur(c.sd)}</b> gehalten werden. Dazu werden die anderen Gewinnrücklagen in der notwendigen Höhe aufgelöst. Ein Gewinnvortrag soll nicht entstehen.`;
   return `<h2>${c.firma}</h2>
     <p>Die Bilanz zum 31.12.2026 weist <b>vor Ergebnisverwendung</b> folgendes Eigenkapital aus:</p>
     <table>${rows.map(([l, v], i) => `<tr class="${i >= 4 ? "vor" : ""}"><td>${l}</td><td class="val">${eur(v)}</td></tr>`).join("")}
     <tr class="sum"><td>Summe Eigenkapital</td><td class="val">${eur(c.ekvor)}</td></tr></table>
-    <p>Alle Aktien haben einen Nennwert von <b>${eur(c.nw)}</b> und sind voll dividendenberechtigt. Die Einstellung in die gesetzliche Rücklage erfolgt nach § 150 AktG.</p>
+    <p>Alle Aktien haben einen Nennwert von <b>${eur(c.nw)}</b> und sind voll dividendenberechtigt. Die Einstellung in die gesetzliche Rücklage erfolgt nach § 150 AktG.</p>
     <p>${vorgabe}</p>`;
 }
 
@@ -258,15 +262,15 @@ function caseHtml() {
 function sol150() {
   const grund = c.fehl <= 0 ? "Die 10-%-Grenze ist bereits erreicht. Es wird nichts eingestellt."
     : c.e === c.fehl ? "Der Fehlbetrag ist kleiner. Er wird eingestellt." : "Der maximale Einstellungsbetrag ist kleiner. Er wird eingestellt.";
-  return `<div class="sol"><h3>Lösungsweg § 150 AktG</h3><div class="two">
+  return `<div class="sol"><h3>Lösungsweg § 150 AktG</h3><div class="two">
     <div><b class="h">Ermittlung des Fehlbetrages</b>10 % des gez. Kapitals: ${num(c.gk)} · 0,1 = ${num(c.zehn)}<br>
       abzüglich (KRL + ges. RL): (${num(c.krl)} + ${num(c.grl0)}) = ${num(c.puffer)}<br><b>Fehlbetrag: ${c.fehl <= 0 ? "keiner" : eur(c.fehl)}</b></div>
     <div><b class="h">Ermittlung des maximalen Einstellungsbetrages</b>5 % vom JÜ abzgl. VV: 0,05 · (${num(c.ju)} − ${num(c.vv)}) = ${num(c.max5)}<br>
       <b>maximaler Einstellungsbetrag: ${eur(c.max5)}</b></div></div>
-    <p class="res">Einstellung in die gesetzliche Rücklage: ${eur(c.e)}</p><p class="hint">${grund}${c.gv0 ? " Der Gewinnvortrag zählt bei § 150 nicht mit." : ""}</p></div>`;
+    <p class="res">Einstellung in die gesetzliche Rücklage: ${eur(c.e)}</p><p class="hint">${grund}${c.gv0 ? " Der Gewinnvortrag zählt bei § 150 nicht mit." : ""}</p></div>`;
 }
 function sol58() {
-  return `<div class="sol"><h3>Lösungsweg § 58 Abs. 2 AktG</h3>
+  return `<div class="sol"><h3>Lösungsweg § 58 Abs. 2 AktG</h3>
     0,5 · (Jahresüberschuss − Verlustvortrag − Einstellung gesetzliche Rücklage)<br>
     = 0,5 · (${num(c.ju)} − ${num(c.vv)} − ${num(c.e)}) = <b>${eur(c.a)}</b></div>`;
 }
@@ -308,9 +312,20 @@ function solEK() {
 }
 
 // ---------- Schritte ----------
+// Feld mit Vorzeichen: Hinweis bei richtigem Betrag, aber falschem Vorzeichen
+function sgn(id, label, exp, hintTxt) {
+  return { id, label, exp, ok: x => near(x, exp) || (exp === 0 && near(x, 0)),
+    hint: x => near(Math.abs(x), Math.abs(exp)) ? (exp < 0 ? `${label.replace(/^[−+] /, "")}: Der Betrag stimmt. Er wird abgezogen, also mit Minus eintragen.` : `${label.replace(/^[−+] /, "")}: Der Betrag stimmt. Er wird addiert, also ohne Minus eintragen.`) : hintTxt };
+}
+function evTop() {
+  return [
+    { id: "ju", label: "Jahresüberschuss", exp: c.ju, ok: x => near(x, c.ju), hint: () => "Jahresüberschuss: Wert aus der Angabe." },
+    c.vv ? sgn("vt", "− Verlustvortrag", -c.vv, "Vortrag: Wert aus der Angabe.") : sgn("vt", "+ Gewinnvortrag", c.gv0, "Vortrag: Wert aus der Angabe."),
+    sgn("ve", "− Einstellung gesetzliche Rücklage", -c.e, "Einstellung gesetzliche Rücklage: Wert aus Schritt 1.")];
+}
 function steps() {
   const S = [];
-  S.push({ title: "Schritt 1: Gesetzliche Rücklage nach § 150 AktG",
+  S.push({ title: "Schritt 1: Gesetzliche Rücklage nach § 150 AktG",
     intro: "Ermittle beide Werte und den Betrag, der eingestellt wird. Ist die 10-%-Grenze schon erreicht, trage beim Fehlbetrag 0 ein.",
     fields: [
       { id: "fehl", label: "Fehlbetrag", exp: c.fehl, ok: x => near(x, c.fehl) || (c.fehl <= 0 && near(x, 0)),
@@ -326,7 +341,7 @@ function steps() {
           : near(x, Math.max(c.fehl, c.max5)) ? "Einstellung: Es gilt der kleinere der beiden Werte."
           : "Einstellung: Vergleiche Fehlbetrag und maximalen Einstellungsbetrag." }],
     sol: sol150 });
-  if (c.L === 2) S.push({ title: "Schritt 2: Andere Gewinnrücklagen nach § 58 Abs. 2 AktG",
+  if (c.L === 2) S.push({ title: "Schritt 2: Andere Gewinnrücklagen nach § 58 Abs. 2 AktG",
     intro: "Ermittle den höchstmöglichen Betrag, den Vorstand und Aufsichtsrat in die anderen Gewinnrücklagen einstellen dürfen.",
     fields: [{ id: "a", label: "Einstellung in andere Gewinnrücklagen", exp: c.a, ok: x => near(x, c.a),
       hint: x => near(x, r2(0.5 * (c.ju - c.vv))) ? "Die Einstellung in die gesetzliche Rücklage vorher abziehen."
@@ -334,33 +349,32 @@ function steps() {
         : near(x, r2(0.5 * c.ju)) ? "Verlustvortrag und Einstellung in die gesetzliche Rücklage vorher abziehen."
         : "50 % von (Jahresüberschuss − Verlustvortrag − Einstellung gesetzliche Rücklage)." }],
     sol: sol58 });
-  if (c.L < 3) S.push({ title: `Schritt ${S.length + 1}: Ergebnisverwendungsrechnung und Stückdividende`,
-    intro: "Ermittle Bilanzgewinn, Stückdividende, Dividende und den Gewinnvortrag für das Folgejahr.",
-    fields: [
+  if (c.L < 3) S.push({ title: `Schritt ${S.length + 1}: Ergebnisverwendungsrechnung und Stückdividende`, ev: "ev",
+    intro: "Fülle das Schema vollständig aus, mit Werten aus der Angabe und aus den vorigen Schritten. Die Stückdividende ermittelst du in der Nebenrechnung.",
+    fields: [...evTop(), sgn("va", "− Einstellung andere Gewinnrücklagen", -c.a, c.L === 2 ? "Einstellung andere Gewinnrücklagen: Wert aus Schritt 2." : "Einstellung andere Gewinnrücklagen: Betrag aus der Vorgabe."),
       { id: "bg", label: "Bilanzgewinn", exp: c.bg, ok: x => near(x, c.bg),
         hint: x => (c.gv0 && near(x, r2(c.bg - c.gv0))) ? "Bilanzgewinn: Den Gewinnvortrag aus dem Vorjahr addieren."
           : (c.vv && near(x, r2(c.bg + c.vv))) ? "Bilanzgewinn: Den Verlustvortrag abziehen."
-          : "Bilanzgewinn: Jahresüberschuss ± Vortrag − Einstellungen in die Gewinnrücklagen." },
+          : "Bilanzgewinn: Summe der Zeilen darüber." },
       { id: "sd", label: "Stückdividende", sub: ruleTxt[c.rule], exp: c.sd, ok: x => near(x, c.sd),
         hint: x => (x !== null && x > c.exact) ? "Stückdividende: Nie aufrunden, die Dividende darf den Bilanzgewinn nicht übersteigen."
           : (x !== null && x < c.sd && x > c.sd - 0.2) ? `Stückdividende: Abrunden ${ruleTxt[c.rule]}, nicht weiter.`
           : "Stückdividende: Bilanzgewinn durch Anzahl der Aktien (gezeichnetes Kapital durch Nennwert)." },
-      { id: "div", label: "Dividende gesamt", exp: c.div, ok: x => near(x, c.div),
-        hint: () => "Dividende: Anzahl der Aktien mal Stückdividende." },
+      sgn("div", "− Dividende", -c.div, "Dividende: Anzahl der Aktien mal Stückdividende."),
       { id: "gvn", label: "Gewinnvortrag für das Folgejahr", exp: c.gvn, ok: x => near(x, c.gvn),
         hint: () => "Gewinnvortrag: Bilanzgewinn minus Dividende." }],
     sol: solEV });
-  if (c.L === 3) S.push({ title: "Schritt 2: Dividende und Entnahme (rückwärts rechnen)",
-    intro: "Ermittle die Dividende, den nötigen Bilanzgewinn und die Entnahme aus den anderen Gewinnrücklagen.",
-    fields: [
-      { id: "div", label: "Dividende gesamt", exp: c.div, ok: x => near(x, c.div),
-        hint: () => "Dividende: Anzahl der Aktien (gezeichnetes Kapital durch Nennwert) mal Stückdividende." },
+  if (c.L === 3) S.push({ title: "Schritt 2: Dividende und Entnahme (rückwärts rechnen)", ev: "ent",
+    intro: "Fülle das Schema vollständig aus. Die oberen Zeilen kommen aus der Angabe und aus Schritt 1. Rechne dann von unten nach oben: Gewinnvortrag, Dividende, Bilanzgewinn, zuletzt die Entnahme.",
+    fields: [...evTop(),
+      { ...sgn("ent", "+ Entnahme andere Gewinnrücklagen", c.ent, ""), hint: x => near(Math.abs(x), c.ent) ? "Entnahme: Sie erhöht den Bilanzgewinn, also ohne Minus eintragen."
+          : near(Math.abs(x), r2(c.div - c.ju + c.e)) ? "Entnahme: Den Gewinnvortrag aus dem Vorjahr nicht vergessen."
+          : near(Math.abs(x), r2(c.div - c.ju - c.gv0)) ? "Entnahme: Die Einstellung in die gesetzliche Rücklage mindert den Bilanzgewinn."
+          : "Entnahme: Bilanzgewinn − (Jahresüberschuss + Gewinnvortrag − Einstellung gesetzliche Rücklage)." },
       { id: "bg", label: "Bilanzgewinn", exp: c.bg, ok: x => near(x, c.bg),
         hint: () => "Bilanzgewinn: Ohne Gewinnvortrag muss er genau so hoch sein wie die Dividende." },
-      { id: "ent", label: "Entnahme aus anderen Gewinnrücklagen", exp: c.ent, ok: x => near(x, c.ent),
-        hint: x => near(x, r2(c.div - c.ju + c.e)) ? "Entnahme: Den Gewinnvortrag aus dem Vorjahr nicht vergessen."
-          : near(x, r2(c.div - c.ju - c.gv0)) ? "Entnahme: Die Einstellung in die gesetzliche Rücklage mindert den Bilanzgewinn."
-          : "Entnahme: Bilanzgewinn − (Jahresüberschuss + Gewinnvortrag − Einstellung gesetzliche Rücklage)." }],
+      sgn("div", "− Dividende", -c.div, "Dividende: Anzahl der Aktien (gezeichnetes Kapital durch Nennwert) mal Stückdividende."),
+      { id: "gvn", label: "Gewinnvortrag für das Folgejahr", exp: 0, ok: x => near(x, 0), hint: () => "Gewinnvortrag: Laut Vorgabe soll kein Vortrag entstehen." }],
     sol: solEnt });
   S.push({ title: `Schritt ${S.length + 1}: Eigenkapital in der Bilanz`, ek: true,
     intro: "Trage die Werte nach teilweiser und nach vollständiger Ergebnisverwendung ein. Gezeichnetes Kapital und Kapitalrücklage bleiben unverändert.",
@@ -380,6 +394,24 @@ function steps() {
 }
 
 function inp(f) { return `<input class="num" inputmode="decimal" autocomplete="off" id="in_${f.id}" aria-label="${f.label}">`; }
+function evGrid(kind) {
+  const row = (l, inner, cls = "") => `<div class="ekrow ${cls}"><span>${l}</span>${inner}</div>`;
+  const I = (id, label) => inp({ id, label });
+  const top = row("Jahresüberschuss", I("ju", "Jahresüberschuss"), "c-vor")
+    + row("+ Gewinnvortrag / − Verlustvortrag aus dem Vorjahr", I("vt", "Vortrag aus dem Vorjahr"), "c-vor")
+    + row("− Einstellung / + Entnahme gesetzliche Rücklage", I("ve", "Einstellung gesetzliche Rücklage"));
+  const rows = top
+    + row("− Einstellung / + Entnahme andere Gewinnrücklagen", I(kind === "ev" ? "va" : "ent", "Andere Gewinnrücklagen"))
+    + row("<b>= Bilanzgewinn</b>", I("bg", "Bilanzgewinn"), "c-teil sumrow")
+    + row("− Dividende", I("div", "Dividende gesamt"))
+    + row("<b>= Gewinnvortrag für das Folgejahr</b>", I("gvn", "Gewinnvortrag für das Folgejahr"), "c-voll sumrow");
+  const neben = kind === "ev"
+    ? `<div class="ekcard"><b class="h">Nebenrechnung Stückdividende (${ruleTxt[c.rule]})</b>${row("Stückdividende", I("sd", "Stückdividende"))}</div>`
+    : `<p class="hint" style="margin:.5rem 0 0">Stückdividende laut Vorgabe: ${eur(c.sd)} je Aktie</p>`;
+  return `<div class="ekcards one"><div class="ekcard"><b class="h">Ergebnisverwendungsrechnung</b>
+    <p class="hint" style="margin:0 0 .4rem">Abzüge mit Minus eintragen, z. B. −23.500</p>${rows}</div>${neben}</div>`;
+}
+
 function ekGrid() {
   const row = (l, inner, cls = "") => `<div class="ekrow ${cls}"><span>${l}</span>${inner}</div>`;
   const fix = v => `<span class="fix">${v}</span>`;
@@ -404,7 +436,7 @@ function build() {
   $("case").innerHTML = caseHtml();
   $("steps").innerHTML = S.map((s, i) => `<section class="panel step${i === 0 ? " show" : ""}" id="st${i}">
     <h2>${s.title}</h2><p class="hint" style="margin:0">${s.intro}</p>
-    ${s.ek ? ekGrid() : `<div class="fields">${s.fields.map(f => `<label class="f">${f.label}${f.sub ? ` <span class="sub">(${f.sub})</span>` : ""}${inp(f)}</label>`).join("")}</div>`}
+    ${s.ek ? ekGrid() : s.ev ? evGrid(s.ev) : `<div class="fields">${s.fields.map(f => `<label class="f">${f.label}${f.sub ? ` <span class="sub">(${f.sub})</span>` : ""}${inp(f)}</label>`).join("")}</div>`}
     <div class="btns"><button class="btn" data-check="${i}">Prüfen</button><button class="btn ghost" data-show="${i}">Lösung zeigen</button></div>
     <div class="fb" id="fb${i}" aria-live="polite"></div><div id="sol${i}"></div></section>`).join("")
     + `<section class="panel done step" id="fertig"><h2>Fall gelöst</h2><p style="margin:.2rem 0 0">Gut gemacht. Probiere einen neuen Fall oder die nächste Stufe.</p>
@@ -434,7 +466,7 @@ document.addEventListener("click", e => {
     s.fields.forEach(f => {
       const el = $("in_" + f.id), x = parse(el.value), ok = f.ok(x);
       el.classList.toggle("ok", ok); el.classList.toggle("bad", !ok);
-      if (!ok) hints.push(x === null ? `${f.label}: Bitte einen Betrag eintragen.` : f.hint(x));
+      if (!ok) hints.push(x === null ? `${f.label.replace(/^[−+] /, "")}: Bitte einen Betrag eintragen.` : f.hint(x));
     });
     const fb = $("fb" + ci);
     if (!hints.length) { fb.className = "fb ok"; fb.textContent = "Alles richtig."; finishStep(+ci, true); }

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ergebnisverwendung trainieren</title>
+<style>
+:root{
+  --ink:#14213A; --ink-soft:#4A5A79; --paper:#EFF1F6; --card:#FFFFFF;
+  --rule:#C9D0DE; --navy:#1F3864; --gold:#B07D14;
+  --wrong:#A03A3A; --wrong-bg:#F6E6E6; --right:#1B6B4C; --right-bg:#E4F1EA;
+  --vor:#FFF3A6; --teil:#C9F5C9; --voll:#C4F1F5;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#E8ECF4; --ink-soft:#A3AFC6; --paper:#10141F; --card:#1A2032;
+    --rule:#333D55; --navy:#93B0E0; --gold:#E2B95C;
+    --wrong:#E99494; --wrong-bg:#3A2020; --right:#6FD3A5; --right-bg:#17352A;
+    --vor:#4A4320; --teil:#1F4A2A; --voll:#1C4549;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#E8ECF4; --ink-soft:#A3AFC6; --paper:#10141F; --card:#1A2032;
+  --rule:#333D55; --navy:#93B0E0; --gold:#E2B95C;
+  --wrong:#E99494; --wrong-bg:#3A2020; --right:#6FD3A5; --right-bg:#17352A;
+  --vor:#4A4320; --teil:#1F4A2A; --voll:#1C4549;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"Segoe UI Variable Display","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",Arial,sans-serif;
+  line-height:1.5; -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:52rem;margin:0 auto;padding:1.4rem 1rem 3rem}
+h1{font-size:clamp(1.7rem,5vw,2.4rem);font-weight:800;letter-spacing:-.025em;line-height:1.1;margin:0 0 .5rem}
+.lede{font-size:clamp(1.02rem,2.2vw,1.15rem);margin:0 0 1rem;max-width:46rem}
+h2{font-size:1.05rem;font-weight:700;color:var(--navy);margin:0 0 .6rem}
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:.6rem;padding:1rem;margin-bottom:1rem}
+.panel.accent{border-left:5px solid var(--navy)}
+.panel.done{border-left:5px solid var(--right)}
+
+.tabs{display:flex;gap:.4rem;margin-bottom:.8rem;flex-wrap:wrap}
+.tab{flex:1 1 10rem;padding:.6rem .7rem;border:1.5px solid var(--rule);background:var(--card);border-radius:.5rem;
+  font:inherit;font-weight:700;font-size:.95rem;color:var(--ink-soft);cursor:pointer;text-align:left;line-height:1.25}
+.tab small{display:block;font-weight:500;font-size:.8rem}
+.tab[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+:root[data-theme="dark"] .tab[aria-selected="true"]{color:#0F1320}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tab[aria-selected="true"]{color:#0F1320}}
+.tab:focus-visible,.btn:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+.topline{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem}
+.counter{font-size:.9rem;color:var(--ink-soft)}
+
+.case p{margin:.4rem 0}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:.98rem}
+td,th{padding:.3rem .35rem;vertical-align:middle}
+th{font-size:.82rem;color:var(--ink-soft);font-weight:700;text-align:right}
+th:first-child{text-align:left}
+td.val{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.sum td{border-top:1.5px solid var(--ink);font-weight:700}
+tr.vor td{background:var(--vor)}
+tr.teil td{background:var(--teil)}
+tr.voll td{background:var(--voll)}
+td.lab{font-size:.8rem;color:var(--ink-soft);white-space:nowrap;padding-left:.6rem}
+.ektab td{border-bottom:1px solid var(--rule)}
+.ektab td.c-vor{background:var(--vor)}
+.ektab td.c-teil{background:var(--teil)}
+.ektab td.c-voll{background:var(--voll)}
+.ektab td.same{color:var(--ink-soft);font-size:.85rem;text-align:right}
+
+.step{display:none}
+.step.show{display:block}
+.fields{display:grid;gap:.7rem;grid-template-columns:1fr;margin:.6rem 0 .2rem}
+@media(min-width:36rem){.fields{grid-template-columns:1fr 1fr}}
+label.f{display:flex;flex-direction:column;gap:.2rem;font-size:.92rem;font-weight:600}
+label.f span.sub{font-weight:400;color:var(--ink-soft);font-size:.82rem}
+input.num{font:inherit;font-size:1.05rem;padding:.55rem .6rem;border:1.5px solid var(--rule);border-radius:.4rem;
+  background:var(--paper);color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;width:100%;min-width:0}
+input.num.ok{border-color:var(--right);background:var(--right-bg)}
+input.num.bad{border-color:var(--wrong);background:var(--wrong-bg)}
+.btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem}
+.btn{display:inline-block;padding:.65rem 1.1rem;border:none;border-radius:.5rem;background:var(--navy);
+  color:#fff;font:inherit;font-size:1rem;font-weight:700;cursor:pointer}
+:root[data-theme="dark"] .btn{color:#0F1320}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#0F1320}}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--rule);font-weight:600}
+.fb{margin-top:.7rem;font-size:.95rem}
+.fb ul{margin:.3rem 0 0;padding-left:1.2rem}
+.fb.bad{border-left:3px solid var(--wrong);padding-left:.7rem}
+.fb.ok{border-left:3px solid var(--right);padding-left:.7rem;color:var(--right);font-weight:600}
+.sol{margin-top:.8rem;background:var(--paper);border:1px solid var(--rule);border-radius:.5rem;padding:.7rem .8rem;font-size:.95rem}
+.sol h3{font-size:.9rem;margin:0 0 .4rem;color:var(--navy)}
+.two{display:grid;grid-template-columns:1fr;gap:.6rem}
+@media(min-width:36rem){.two{grid-template-columns:1fr 1fr}}
+.two > div{background:var(--card);border:1px solid var(--rule);border-radius:.4rem;padding:.5rem .6rem}
+.two b.h{display:block;font-size:.85rem;margin-bottom:.2rem}
+.res{margin-top:.5rem;font-weight:700}
+.ekcards{display:grid;gap:.7rem;grid-template-columns:1fr;margin-top:.6rem}
+@media(min-width:44rem){.ekcards{grid-template-columns:1fr 1fr}}
+.ekcard{border:1px solid var(--rule);border-radius:.5rem;padding:.6rem .7rem}
+.ekcard b.h{display:block;font-size:.88rem;color:var(--navy);margin-bottom:.3rem}
+.ekrow{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.25rem .3rem;border-bottom:1px solid var(--rule);font-size:.92rem}
+.ekrow:last-child{border-bottom:none}
+.ekrow input.num{width:11rem;flex:0 0 11rem;padding:.4rem .5rem;font-size:.98rem}
+.ekrow .fix{font-variant-numeric:tabular-nums;color:var(--ink-soft);padding-right:.5rem}
+.ekrow.c-teil{background:var(--teil)}
+.ekrow.c-voll{background:var(--voll)}
+.ekrow.sumrow{border-top:1.5px solid var(--ink)}
+.legend{font-size:.82rem;color:var(--ink-soft);margin:.2rem 0 .4rem}
+.legend i{display:inline-block;width:.7rem;height:.7rem;border-radius:.15rem;margin:0 .25rem 0 .5rem;vertical-align:-.05rem;border:1px solid var(--rule)}
+.legend i:first-child{margin-left:0}
+.sol .ektab{font-size:.85rem}
+.sol .ektab td,.sol .ektab th{padding:.25rem .3rem}
+@media(max-width:34rem){td.lab{display:none}.sol .ektab{font-size:.74rem}}
+.merk{border-left:5px solid var(--gold)}
+.merk p{margin:.3rem 0}
+.hint{font-size:.88rem;color:var(--ink-soft)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Ergebnisverwendung trainieren</h1>
+  <p class="lede">Jeder Fall ist neu gewürfelt. Rechne Schritt für Schritt wie in der Abschlussprüfung:
+    gesetzliche Rücklage nach § 150 AktG, andere Gewinnrücklagen, Ergebnisverwendungsrechnung mit Stückdividende
+    und zum Schluss das Eigenkapital in der Bilanz.</p>
+
+  <div class="tabs" role="tablist" id="tabs">
+    <button class="tab" role="tab" data-l="1" aria-selected="true">Stufe 1<small>Grundfall mit Gewinnvortrag</small></button>
+    <button class="tab" role="tab" data-l="2" aria-selected="false">Stufe 2<small>Verlustvortrag und § 58 AktG</small></button>
+    <button class="tab" role="tab" data-l="3" aria-selected="false">Stufe 3<small>Entnahme aus anderen Gewinnrücklagen</small></button>
+  </div>
+  <div class="topline">
+    <button class="btn ghost" id="neu">Neuer Fall</button>
+    <span class="counter" id="counter">Gelöste Fälle: 0</span>
+  </div>
+
+  <section class="panel accent case" id="case"></section>
+  <div id="steps"></div>
+
+  <section class="panel merk">
+    <h2>Merke</h2>
+    <p><b>§ 150 AktG:</b> der kleinere Wert aus Fehlbetrag (10 % des gezeichneten Kapitals minus Kapitalrücklage und gesetzliche Rücklage) und 5 % vom Jahresüberschuss abzüglich Verlustvortrag. Ein Gewinnvortrag zählt nicht.</p>
+    <p><b>§ 58 Abs. 2 AktG:</b> höchstens 50 % von (Jahresüberschuss minus Verlustvortrag minus Einstellung in die gesetzliche Rücklage).</p>
+    <p><b>Stückdividende:</b> Bilanzgewinn durch Anzahl der Aktien, immer abrunden nach Vorgabe. Anzahl der Aktien = gezeichnetes Kapital durch Nennwert.</p>
+    <p><b>Eigenkapital:</b> nach teilweiser Ergebnisverwendung so hoch wie vorher, nach vollständiger Ergebnisverwendung um die Dividende niedriger. Die Kapitalrücklage bleibt immer unverändert.</p>
+  </section>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const r2 = x => Math.round(x * 100) / 100;
+const eur = n => r2(n).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+const num = n => r2(n).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const stk = n => n.toLocaleString("de-DE") + " Stück";
+const rnd = (a, b) => a + Math.random() * (b - a);
+const roundTo = (x, s) => Math.round(x / s) * s;
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const near = (x, v) => x !== null && Math.abs(x - v) < 0.005;
+const ruleTxt = { 10: "auf volle 10 Cent", 5: "auf volle 5 Cent", 1: "auf ganze Cent" };
+
+const FIRMEN = ["Domreiter Möbel AG, Bamberg", "Regnitztal Kunststoff AG, Bamberg", "Hallstadter Präzisionsteile AG, Hallstadt",
+  "Steigerwald Holzbau AG, Burgebrach", "Memmelsdorfer Solartechnik AG, Memmelsdorf", "Strullendorfer Verpackung AG, Strullendorf",
+  "Scheßlitzer Landtechnik AG, Scheßlitz", "Stegauracher Elektronik AG, Stegaurach", "Litzendorfer Feinmechanik AG, Litzendorf",
+  "Baunacher Glas AG, Baunach", "Hirschaider Druck AG, Hirschaid", "Gaustadter Textil AG, Bamberg"];
+
+// Zahleneingabe deutsch oder englisch
+function parse(s) {
+  if (s == null) return null;
+  s = String(s).replace(/€|\s/g, "").replace(/−/g, "-");
+  if (s === "") return null;
+  if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
+  const v = Number(s);
+  return isFinite(v) ? v : null;
+}
+
+function gen(L) {
+  for (let t = 0; t < 2000; t++) {
+    const c = { L, firma: pick(FIRMEN) };
+    c.nw = pick([5, 5, 5, 2, 1]);
+    c.gk = Math.round(rnd(8, 60)) * 500000;
+    c.n = c.gk / c.nw;
+    c.zehn = r2(c.gk * 0.1);
+    c.ju = L < 3 ? roundTo(c.gk * rnd(0.06, 0.18), 10000) : roundTo(c.gk * rnd(0.008, 0.035), 1000);
+    c.vv = L === 2 ? roundTo(c.ju * rnd(0.05, 0.3), 1000) : 0;
+    c.gv0 = L !== 2 ? roundTo(rnd(2000, 40000), 100) : 0;
+    c.max5 = r2(0.05 * (c.ju - c.vv));
+    const u = Math.random();
+    c.typ = u < 0.38 ? "fehl" : u < 0.85 ? "max" : "voll";
+    let puffer;
+    if (c.typ === "fehl") { const f = roundTo(c.max5 * rnd(0.15, 0.85), 100); if (f <= 0 || f >= c.max5) continue; puffer = c.zehn - f; }
+    else if (c.typ === "max") { const f = roundTo(rnd(c.max5 * 1.5, c.zehn * 0.6), 1000); if (f <= c.max5) continue; puffer = c.zehn - f; }
+    else puffer = c.zehn + (Math.random() < 0.4 ? 0 : roundTo(rnd(0, c.zehn * 0.2), 1000));
+    c.krl = roundTo(puffer * rnd(0.25, 0.75), 1000);
+    c.grl0 = r2(puffer - c.krl);
+    if (c.krl <= 0 || c.grl0 <= 0) continue;
+    c.puffer = r2(puffer);
+    c.fehl = r2(c.zehn - c.puffer);
+    c.e = r2(Math.max(0, Math.min(c.fehl, c.max5)));
+    c.agr0 = roundTo(c.gk * rnd(0.08, 0.35), 10000);
+    c.ent = 0;
+    if (L === 1) {
+      c.lim = r2(0.5 * (c.ju - c.e));
+      c.a = roundTo(c.lim * rnd(0.3, 0.9), 10000);
+      if (c.a <= 0 || c.a > c.lim) continue;
+    } else if (L === 2) {
+      c.a = r2(0.5 * (c.ju - c.vv - c.e));
+    } else c.a = 0;
+    if (L < 3) {
+      c.bg = r2(c.ju + c.gv0 - c.vv - c.e - c.a);
+      c.rule = L === 1 ? 10 : pick([10, 5, 1]);
+      c.exact = c.bg / c.n;
+      c.sd = Math.floor(Math.round(c.bg * 100) / c.n / c.rule + 1e-9) * c.rule / 100;
+      if (c.sd < 0.1 || c.sd > 3) continue;
+      if (Math.abs(c.exact * 100 - Math.round(c.exact * 100)) < 1e-6 && c.rule === 1) continue;
+      c.div = r2(c.n * c.sd);
+      c.gvn = r2(c.bg - c.div);
+    } else {
+      c.basis = r2(c.ju + c.gv0 - c.e);
+      const ks = [];
+      for (let k = 2; k <= 60; k++) { const d = c.n * k * 0.05; if (d >= c.basis * 1.3 && d <= c.basis + c.agr0 * 0.7) ks.push(k); }
+      if (!ks.length) continue;
+      c.sd = r2(pick(ks) * 0.05);
+      c.div = r2(c.n * c.sd);
+      c.bg = c.div;
+      c.ent = r2(c.div - c.basis);
+      c.gvn = 0;
+    }
+    c.ekvor = r2(c.gk + c.krl + c.grl0 + c.agr0 + c.gv0 - c.vv + c.ju);
+    c.grl1 = r2(c.grl0 + c.e);
+    c.agr1 = r2(c.agr0 + c.a - c.ent);
+    c.ekv = r2(c.ekvor - c.div);
+    return c;
+  }
+}
+
+let level = 1, c = null, solved = 0;
+
+function caseHtml() {
+  const vorz = c.vv ? ["Verlustvortrag aus dem Vorjahr", -c.vv] : ["Gewinnvortrag aus dem Vorjahr", c.gv0];
+  const rows = [["Gezeichnetes Kapital", c.gk], ["Kapitalrücklage", c.krl], ["Gesetzliche Rücklage", c.grl0],
+    ["Andere Gewinnrücklagen", c.agr0], vorz, ["Jahresüberschuss", c.ju]];
+  let vorgabe;
+  if (c.L === 1) vorgabe = `Vorstand und Aufsichtsrat stellen <b>${eur(c.a)}</b> in die anderen Gewinnrücklagen ein. Der verbleibende Bilanzgewinn wird als höchstmögliche Stückdividende <b>${ruleTxt[c.rule]}</b> ausgeschüttet.`;
+  else if (c.L === 2) vorgabe = `Vorstand und Aufsichtsrat stellen den nach § 58 Abs. 2 AktG <b>höchstmöglichen Betrag</b> in die anderen Gewinnrücklagen ein. Der verbleibende Bilanzgewinn wird als höchstmögliche Stückdividende <b>${ruleTxt[c.rule]}</b> ausgeschüttet.`;
+  else vorgabe = `Der Jahresüberschuss ist stark gesunken. Trotzdem soll die Stückdividende des Vorjahres von <b>${eur(c.sd)}</b> gehalten werden. Dazu werden die anderen Gewinnrücklagen in der notwendigen Höhe aufgelöst. Ein Gewinnvortrag soll nicht entstehen.`;
+  return `<h2>${c.firma}</h2>
+    <p>Die Bilanz zum 31.12.2026 weist <b>vor Ergebnisverwendung</b> folgendes Eigenkapital aus:</p>
+    <table>${rows.map(([l, v], i) => `<tr class="${i >= 4 ? "vor" : ""}"><td>${l}</td><td class="val">${eur(v)}</td></tr>`).join("")}
+    <tr class="sum"><td>Summe Eigenkapital</td><td class="val">${eur(c.ekvor)}</td></tr></table>
+    <p>Alle Aktien haben einen Nennwert von <b>${eur(c.nw)}</b> und sind voll dividendenberechtigt. Die Einstellung in die gesetzliche Rücklage erfolgt nach § 150 AktG.</p>
+    <p>${vorgabe}</p>`;
+}
+
+// ---------- Lösungsdarstellungen ----------
+function sol150() {
+  const grund = c.fehl <= 0 ? "Die 10-%-Grenze ist bereits erreicht. Es wird nichts eingestellt."
+    : c.e === c.fehl ? "Der Fehlbetrag ist kleiner. Er wird eingestellt." : "Der maximale Einstellungsbetrag ist kleiner. Er wird eingestellt.";
+  return `<div class="sol"><h3>Lösungsweg § 150 AktG</h3><div class="two">
+    <div><b class="h">Ermittlung des Fehlbetrages</b>10 % des gez. Kapitals: ${num(c.gk)} · 0,1 = ${num(c.zehn)}<br>
+      abzüglich (KRL + ges. RL): (${num(c.krl)} + ${num(c.grl0)}) = ${num(c.puffer)}<br><b>Fehlbetrag: ${c.fehl <= 0 ? "keiner" : eur(c.fehl)}</b></div>
+    <div><b class="h">Ermittlung des maximalen Einstellungsbetrages</b>5 % vom JÜ abzgl. VV: 0,05 · (${num(c.ju)} − ${num(c.vv)}) = ${num(c.max5)}<br>
+      <b>maximaler Einstellungsbetrag: ${eur(c.max5)}</b></div></div>
+    <p class="res">Einstellung in die gesetzliche Rücklage: ${eur(c.e)}</p><p class="hint">${grund}${c.gv0 ? " Der Gewinnvortrag zählt bei § 150 nicht mit." : ""}</p></div>`;
+}
+function sol58() {
+  return `<div class="sol"><h3>Lösungsweg § 58 Abs. 2 AktG</h3>
+    0,5 · (Jahresüberschuss − Verlustvortrag − Einstellung gesetzliche Rücklage)<br>
+    = 0,5 · (${num(c.ju)} − ${num(c.vv)} − ${num(c.e)}) = <b>${eur(c.a)}</b></div>`;
+}
+const LEG = `<p class="legend"><i style="background:var(--vor)"></i>vor <i style="background:var(--teil)"></i>nach teilweiser <i style="background:var(--voll)"></i>nach vollständiger Ergebnisverwendung</p>`;
+function evTable() {
+  const rows = [["Jahresüberschuss", c.ju, "vor", "vor Ergebnisverwendung"],
+    c.vv ? ["− Verlustvortrag aus dem Vorjahr", -c.vv, "vor", ""] : ["+ Gewinnvortrag aus dem Vorjahr", c.gv0, "vor", ""],
+    ["− Einstellung in die gesetzliche Rücklage", -c.e, "", "↓"],
+    c.L === 3 ? ["+ Entnahme aus anderen Gewinnrücklagen", c.ent, "", "↓"] : ["− Einstellung in andere Gewinnrücklagen", -c.a, "", "↓"],
+    ["= Bilanzgewinn", c.bg, "teil", "nach teilweiser"],
+    [`− Dividende (${stk(c.n)} · ${eur(c.sd)})`, -c.div, "", "↓"],
+    ["= Gewinnvortrag für das Folgejahr", c.gvn, "voll", "nach vollständiger"]];
+  return LEG + `<div class="tscroll"><table>${rows.map(([l, v, cl, lab]) => `<tr class="${cl}"><td>${l}</td><td class="val">${eur(Math.abs(v))}</td><td class="lab">${lab}</td></tr>`).join("")}</table></div>`;
+}
+function solEV() {
+  const ex = (c.bg / c.n).toLocaleString("de-DE", { maximumFractionDigits: 5 });
+  return `<div class="sol"><h3>Ergebnisverwendungsrechnung</h3>
+    <p style="margin:.2rem 0 .5rem">Anzahl der Aktien: ${num(c.gk)} : ${num(c.nw)} = ${stk(c.n)}<br>
+    Stückdividende: ${num(c.bg)} : ${c.n.toLocaleString("de-DE")} = ${ex} € → ${ruleTxt[c.rule]} abgerundet: <b>${eur(c.sd)}</b></p>${evTable()}</div>`;
+}
+function solEnt() {
+  return `<div class="sol"><h3>Rückwärts rechnen</h3>
+    <p style="margin:.2rem 0 .5rem">Dividende: ${stk(c.n)} · ${eur(c.sd)} = ${eur(c.div)}<br>
+    Kein Gewinnvortrag, also Bilanzgewinn = Dividende = ${eur(c.bg)}<br>
+    Entnahme = ${num(c.bg)} − (${num(c.ju)} + ${num(c.gv0)} − ${num(c.e)}) = <b>${eur(c.ent)}</b></p>${evTable()}</div>`;
+}
+function solEK() {
+  const R = (l, a, b, d, cls = "") => `<tr class="${cls}"><td>${l}</td><td class="val">${a}</td><td class="val">${b}</td><td class="val">${d}</td></tr>`;
+  return `<div class="sol"><h3>Eigenkapital in der Bilanz</h3>${LEG}<div class="tscroll"><table class="ektab">
+    <tr><th>Position</th><th>vor</th><th>nach teilweiser</th><th>nach vollständiger</th></tr>
+    ${R("Gezeichnetes Kapital", num(c.gk), num(c.gk), num(c.gk))}${R("Kapitalrücklage", num(c.krl), num(c.krl), num(c.krl))}
+    ${R("Gesetzliche Rücklage", num(c.grl0), num(c.grl1), num(c.grl1))}${R("Andere Gewinnrücklagen", num(c.agr0), num(c.agr1), num(c.agr1))}
+    <tr><td>${c.vv ? "Verlustvortrag Vorjahr" : "Gewinnvortrag Vorjahr"}</td><td class="val c-vor">${c.vv ? "−" + num(c.vv) : num(c.gv0)}</td><td></td><td></td></tr>
+    <tr><td>Jahresüberschuss</td><td class="val c-vor">${num(c.ju)}</td><td></td><td></td></tr>
+    <tr><td>Bilanzgewinn</td><td></td><td class="val c-teil">${num(c.bg)}</td><td></td></tr>
+    <tr><td>Gewinnvortrag 2026</td><td></td><td></td><td class="val c-voll">${num(c.gvn)}</td></tr>
+    <tr class="sum"><td>Summe Eigenkapital</td><td class="val">${num(c.ekvor)}</td><td class="val">${num(c.ekvor)}</td><td class="val">${num(c.ekv)}</td></tr>
+    </table></div><p class="hint">Die Dividende von ${eur(c.div)} ist nach vollständiger Ergebnisverwendung kein Eigenkapital mehr, sondern eine Verbindlichkeit gegenüber den Aktionären.</p></div>`;
+}
+
+// ---------- Schritte ----------
+function steps() {
+  const S = [];
+  S.push({ title: "Schritt 1: Gesetzliche Rücklage nach § 150 AktG",
+    intro: "Ermittle beide Werte und den Betrag, der eingestellt wird. Ist die 10-%-Grenze schon erreicht, trage beim Fehlbetrag 0 ein.",
+    fields: [
+      { id: "fehl", label: "Fehlbetrag", exp: c.fehl, ok: x => near(x, c.fehl) || (c.fehl <= 0 && near(x, 0)),
+        hint: x => near(x, c.zehn) ? "Fehlbetrag: Kapitalrücklage und gesetzliche Rücklage noch abziehen."
+          : near(x, r2(c.zehn - c.grl0)) ? "Fehlbetrag: Auch die Kapitalrücklage zählt mit."
+          : "Fehlbetrag: 10 % des gezeichneten Kapitals minus (Kapitalrücklage + gesetzliche Rücklage)." },
+      { id: "max5", label: "Maximaler Einstellungsbetrag", exp: c.max5, ok: x => near(x, c.max5),
+        hint: x => (c.gv0 && near(x, r2(0.05 * (c.ju + c.gv0)))) ? "Maximaler Einstellungsbetrag: Der Gewinnvortrag zählt nicht mit."
+          : (c.vv && near(x, r2(0.05 * c.ju))) ? "Maximaler Einstellungsbetrag: Den Verlustvortrag vorher abziehen."
+          : "Maximaler Einstellungsbetrag: 5 % vom Jahresüberschuss abzüglich Verlustvortrag." },
+      { id: "e", label: "Einstellung in die gesetzliche Rücklage", exp: c.e, ok: x => near(x, c.e),
+        hint: x => (c.fehl <= 0) ? "Einstellung: Die 10-%-Grenze ist erreicht. Es wird nichts eingestellt."
+          : near(x, Math.max(c.fehl, c.max5)) ? "Einstellung: Es gilt der kleinere der beiden Werte."
+          : "Einstellung: Vergleiche Fehlbetrag und maximalen Einstellungsbetrag." }],
+    sol: sol150 });
+  if (c.L === 2) S.push({ title: "Schritt 2: Andere Gewinnrücklagen nach § 58 Abs. 2 AktG",
+    intro: "Ermittle den höchstmöglichen Betrag, den Vorstand und Aufsichtsrat in die anderen Gewinnrücklagen einstellen dürfen.",
+    fields: [{ id: "a", label: "Einstellung in andere Gewinnrücklagen", exp: c.a, ok: x => near(x, c.a),
+      hint: x => near(x, r2(0.5 * (c.ju - c.vv))) ? "Die Einstellung in die gesetzliche Rücklage vorher abziehen."
+        : near(x, r2(0.5 * (c.ju - c.e))) ? "Den Verlustvortrag vorher abziehen."
+        : near(x, r2(0.5 * c.ju)) ? "Verlustvortrag und Einstellung in die gesetzliche Rücklage vorher abziehen."
+        : "50 % von (Jahresüberschuss − Verlustvortrag − Einstellung gesetzliche Rücklage)." }],
+    sol: sol58 });
+  if (c.L < 3) S.push({ title: `Schritt ${S.length + 1}: Ergebnisverwendungsrechnung und Stückdividende`,
+    intro: "Ermittle Bilanzgewinn, Stückdividende, Dividende und den Gewinnvortrag für das Folgejahr.",
+    fields: [
+      { id: "bg", label: "Bilanzgewinn", exp: c.bg, ok: x => near(x, c.bg),
+        hint: x => (c.gv0 && near(x, r2(c.bg - c.gv0))) ? "Bilanzgewinn: Den Gewinnvortrag aus dem Vorjahr addieren."
+          : (c.vv && near(x, r2(c.bg + c.vv))) ? "Bilanzgewinn: Den Verlustvortrag abziehen."
+          : "Bilanzgewinn: Jahresüberschuss ± Vortrag − Einstellungen in die Gewinnrücklagen." },
+      { id: "sd", label: "Stückdividende", sub: ruleTxt[c.rule], exp: c.sd, ok: x => near(x, c.sd),
+        hint: x => (x !== null && x > c.exact) ? "Stückdividende: Nie aufrunden, die Dividende darf den Bilanzgewinn nicht übersteigen."
+          : (x !== null && x < c.sd && x > c.sd - 0.2) ? `Stückdividende: Abrunden ${ruleTxt[c.rule]}, nicht weiter.`
+          : "Stückdividende: Bilanzgewinn durch Anzahl der Aktien (gezeichnetes Kapital durch Nennwert)." },
+      { id: "div", label: "Dividende gesamt", exp: c.div, ok: x => near(x, c.div),
+        hint: () => "Dividende: Anzahl der Aktien mal Stückdividende." },
+      { id: "gvn", label: "Gewinnvortrag für das Folgejahr", exp: c.gvn, ok: x => near(x, c.gvn),
+        hint: () => "Gewinnvortrag: Bilanzgewinn minus Dividende." }],
+    sol: solEV });
+  if (c.L === 3) S.push({ title: "Schritt 2: Dividende und Entnahme (rückwärts rechnen)",
+    intro: "Ermittle die Dividende, den nötigen Bilanzgewinn und die Entnahme aus den anderen Gewinnrücklagen.",
+    fields: [
+      { id: "div", label: "Dividende gesamt", exp: c.div, ok: x => near(x, c.div),
+        hint: () => "Dividende: Anzahl der Aktien (gezeichnetes Kapital durch Nennwert) mal Stückdividende." },
+      { id: "bg", label: "Bilanzgewinn", exp: c.bg, ok: x => near(x, c.bg),
+        hint: () => "Bilanzgewinn: Ohne Gewinnvortrag muss er genau so hoch sein wie die Dividende." },
+      { id: "ent", label: "Entnahme aus anderen Gewinnrücklagen", exp: c.ent, ok: x => near(x, c.ent),
+        hint: x => near(x, r2(c.div - c.ju + c.e)) ? "Entnahme: Den Gewinnvortrag aus dem Vorjahr nicht vergessen."
+          : near(x, r2(c.div - c.ju - c.gv0)) ? "Entnahme: Die Einstellung in die gesetzliche Rücklage mindert den Bilanzgewinn."
+          : "Entnahme: Bilanzgewinn − (Jahresüberschuss + Gewinnvortrag − Einstellung gesetzliche Rücklage)." }],
+    sol: solEnt });
+  S.push({ title: `Schritt ${S.length + 1}: Eigenkapital in der Bilanz`, ek: true,
+    intro: "Trage die Werte nach teilweiser und nach vollständiger Ergebnisverwendung ein. Gezeichnetes Kapital und Kapitalrücklage bleiben unverändert.",
+    fields: [
+      { id: "grl1", label: "Gesetzliche Rücklage", exp: c.grl1, ok: x => near(x, c.grl1), hint: () => "Gesetzliche Rücklage: Anfangsbestand plus Einstellung." },
+      { id: "agr1", label: "Andere Gewinnrücklagen", exp: c.agr1, ok: x => near(x, c.agr1),
+        hint: x => near(x, c.agr0) ? "Andere Gewinnrücklagen: Die " + (c.L === 3 ? "Entnahme" : "Einstellung") + " verändert den Bestand."
+          : c.L === 3 ? "Andere Gewinnrücklagen: Anfangsbestand minus Entnahme." : "Andere Gewinnrücklagen: Anfangsbestand plus Einstellung." },
+      { id: "bgB", label: "Bilanzgewinn", exp: c.bg, ok: x => near(x, c.bg), hint: () => "Bilanzgewinn: Wert aus der Ergebnisverwendungsrechnung." },
+      { id: "ekt", label: "Summe Eigenkapital (teilweise)", exp: c.ekvor, ok: x => near(x, c.ekvor),
+        hint: () => "Summe nach teilweiser Ergebnisverwendung: Es wurde noch nichts ausgeschüttet, das Eigenkapital ist so hoch wie vorher." },
+      { id: "gvB", label: "Gewinnvortrag 2026", exp: c.gvn, ok: x => near(x, c.gvn), hint: () => "Gewinnvortrag: Rest des Bilanzgewinns nach der Dividende." },
+      { id: "ekv", label: "Summe Eigenkapital (vollständig)", exp: c.ekv, ok: x => near(x, c.ekv),
+        hint: () => "Summe nach vollständiger Ergebnisverwendung: Eigenkapital vorher minus Dividende." }],
+    sol: solEK });
+  return S;
+}
+
+function inp(f) { return `<input class="num" inputmode="decimal" autocomplete="off" id="in_${f.id}" aria-label="${f.label}">`; }
+function ekGrid() {
+  const row = (l, inner, cls = "") => `<div class="ekrow ${cls}"><span>${l}</span>${inner}</div>`;
+  const fix = v => `<span class="fix">${v}</span>`;
+  return `<div class="ekcards">
+    <div class="ekcard"><b class="h">nach teilweiser Ergebnisverwendung</b>
+      ${row("Gezeichnetes Kapital", fix(num(c.gk)))}${row("Kapitalrücklage", fix(num(c.krl)))}
+      ${row("Gesetzliche Rücklage", inp({ id: "grl1", label: "Gesetzliche Rücklage" }))}
+      ${row("Andere Gewinnrücklagen", inp({ id: "agr1", label: "Andere Gewinnrücklagen" }))}
+      ${row("Bilanzgewinn", inp({ id: "bgB", label: "Bilanzgewinn" }), "c-teil")}
+      ${row("<b>Summe Eigenkapital</b>", inp({ id: "ekt", label: "Summe Eigenkapital teilweise" }), "sumrow")}</div>
+    <div class="ekcard"><b class="h">nach vollständiger Ergebnisverwendung</b>
+      ${row("Gezeichnetes Kapital", fix("unverändert"))}${row("Kapitalrücklage", fix("unverändert"))}
+      ${row("Gesetzliche Rücklage", fix("wie links"))}${row("Andere Gewinnrücklagen", fix("wie links"))}
+      ${row("Gewinnvortrag 2026", inp({ id: "gvB", label: "Gewinnvortrag 2026" }), "c-voll")}
+      ${row("<b>Summe Eigenkapital</b>", inp({ id: "ekv", label: "Summe Eigenkapital vollständig" }), "sumrow")}</div></div>`;
+}
+
+let S = [];
+function build() {
+  c = gen(level);
+  S = steps();
+  $("case").innerHTML = caseHtml();
+  $("steps").innerHTML = S.map((s, i) => `<section class="panel step${i === 0 ? " show" : ""}" id="st${i}">
+    <h2>${s.title}</h2><p class="hint" style="margin:0">${s.intro}</p>
+    ${s.ek ? ekGrid() : `<div class="fields">${s.fields.map(f => `<label class="f">${f.label}${f.sub ? ` <span class="sub">(${f.sub})</span>` : ""}${inp(f)}</label>`).join("")}</div>`}
+    <div class="btns"><button class="btn" data-check="${i}">Prüfen</button><button class="btn ghost" data-show="${i}">Lösung zeigen</button></div>
+    <div class="fb" id="fb${i}" aria-live="polite"></div><div id="sol${i}"></div></section>`).join("")
+    + `<section class="panel done step" id="fertig"><h2>Fall gelöst</h2><p style="margin:.2rem 0 0">Gut gemacht. Probiere einen neuen Fall oder die nächste Stufe.</p>
+    <div class="btns"><button class="btn" id="neu2">Neuer Fall</button></div></section>`;
+  $("neu2").onclick = () => { build(); window.scrollTo({ top: 0, behavior: "smooth" }); };
+}
+
+function finishStep(i, solvedSelf) {
+  const s = S[i], box = $("sol" + i);
+  if (!box.innerHTML) box.innerHTML = s.sol();
+  s.fields.forEach(f => { const el = $("in_" + f.id); el.readOnly = true; });
+  const sec = $("st" + i);
+  sec.querySelectorAll("button").forEach(b => b.disabled = true);
+  sec.querySelectorAll(".btns").forEach(b => b.style.display = "none");
+  const next = i + 1 < S.length ? $("st" + (i + 1)) : $("fertig");
+  if (!next.classList.contains("show")) {
+    next.classList.add("show");
+    if (i + 1 === S.length) { if (solvedSelf && S.every(x => x.self !== false)) solved++; $("counter").textContent = "Gelöste Fälle: " + solved; }
+  }
+  if (!solvedSelf) s.self = false;
+}
+
+document.addEventListener("click", e => {
+  const ci = e.target.dataset.check, si = e.target.dataset.show;
+  if (ci !== undefined) {
+    const s = S[+ci], hints = [];
+    s.fields.forEach(f => {
+      const el = $("in_" + f.id), x = parse(el.value), ok = f.ok(x);
+      el.classList.toggle("ok", ok); el.classList.toggle("bad", !ok);
+      if (!ok) hints.push(x === null ? `${f.label}: Bitte einen Betrag eintragen.` : f.hint(x));
+    });
+    const fb = $("fb" + ci);
+    if (!hints.length) { fb.className = "fb ok"; fb.textContent = "Alles richtig."; finishStep(+ci, true); }
+    else { fb.className = "fb bad"; fb.innerHTML = "Noch nicht ganz:<ul>" + hints.map(h => `<li>${h}</li>`).join("") + "</ul>"; }
+  }
+  if (si !== undefined) {
+    const s = S[+si];
+    s.self = false;
+    s.fields.forEach(f => { const el = $("in_" + f.id); if (!f.ok(parse(el.value))) { el.value = num(f.exp); el.classList.remove("bad"); } });
+    $("fb" + si).className = "fb"; $("fb" + si).textContent = "";
+    finishStep(+si, false);
+  }
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.classList.contains("num")) {
+    const sec = e.target.closest(".step"); const b = sec && sec.querySelector("[data-check]"); if (b && !b.disabled) b.click();
+  }
+});
+$("tabs").addEventListener("click", e => {
+  const t = e.target.closest(".tab"); if (!t) return;
+  level = +t.dataset.l;
+  document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x === t ? "true" : "false"));
+  build();
+});
+$("neu").onclick = build;
+build();
+</script>
+</body>
+</html>

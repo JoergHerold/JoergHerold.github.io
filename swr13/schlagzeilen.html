@@ -171,9 +171,9 @@ function renderBoard() {
   ["k", "s", "f"].forEach(s => {
     const el = $("col-" + s); el.innerHTML = "";
     CARDS.forEach((c, k) => {
-      if (picks[k] !== s) return;
+      if (!picks[k] || c.side !== s) return; // an der Tafel steht immer die Lösung
       const d = document.createElement("div"); d.className = "chip"; d.textContent = c.h;
-      if (!c.accept.includes(s)) { const n = document.createElement("span"); n.className = "note"; n.textContent = "Lösung: " + NAMES[c.side]; d.appendChild(n); }
+      if (c.accept.length > 1 && c.side !== "s") { const n = document.createElement("span"); n.className = "note"; n.textContent = "auch strittig"; d.appendChild(n); }
       el.appendChild(d);
     });
     if (!el.children.length) el.innerHTML = '<span class="empty">Noch keine Schlagzeile</span>';
@@ -185,8 +185,8 @@ function next() {
   if (!picks[i]) return;
   if (i < CARDS.length - 1) { i++; show(); }
   else {
-    const hits = picks.filter((p, k) => CARDS[k].accept.includes(p)).length;
-    $("sumtext").textContent = `Die Klasse hat ${hits} von ${CARDS.length} Schlagzeilen passend zugeordnet. Auf der Tafel stehen ${picks.filter(p => p === "k").length} Maßnahmen bei Keynes und ${picks.filter(p => p === "f").length} bei Friedman.`;
+    const n = s => CARDS.filter(c => c.side === s).length;
+    $("sumtext").textContent = `Von den ${CARDS.length} Schlagzeilen gehören ${n("k")} zu Keynes und ${n("f")} zu Friedman. ${n("s")} ist strittig und passt zu beiden.`;
     $("summary").hidden = false; $("summary").scrollIntoView({ behavior: "smooth" });
   }
 }

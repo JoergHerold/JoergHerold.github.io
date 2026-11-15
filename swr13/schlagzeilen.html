@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Keynes oder Friedman?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+/* Layout: oben die aktuelle Schlagzeile groß für den Beamer, darunter die Tafel mit drei Spalten Keynes | strittig | Friedman */
+:root {
+  --bg: #eef1f4; --surface: #ffffff; --fg: #1c2530; --muted: #5b6774; --line: #d3d9e0;
+  --staat: #1f6f78; --markt: #b5651d; --mitte: #6b5ca5;
+  --staat-soft: #d8ecee; --markt-soft: #f6e4d2; --mitte-soft: #e6e1f3;
+  --ok: #2e7d32; --focus: #2f5fd0;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12171d; --surface: #1b232c; --fg: #e8edf2; --muted: #9aa7b4; --line: #2e3a46;
+    --staat: #5bb8c2; --markt: #e39a55; --mitte: #a99be0;
+    --staat-soft: #18363a; --markt-soft: #3d2a18; --mitte-soft: #2a2540; --ok: #7bc77f; --focus: #8fb0ff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12171d; --surface: #1b232c; --fg: #e8edf2; --muted: #9aa7b4; --line: #2e3a46;
+  --staat: #5bb8c2; --markt: #e39a55; --mitte: #a99be0;
+  --staat-soft: #18363a; --markt-soft: #3d2a18; --mitte-soft: #2a2540; --ok: #7bc77f; --focus: #8fb0ff;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 18px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 32px;
+}
+main { max-width: 1100px; margin: 0 auto; display: grid; gap: 20px; }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(1.6rem, 3.5vw, 2.2rem); line-height: 1.1; margin: 0; text-wrap: balance; }
+.top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.kicker { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+button { font: inherit; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+.stage { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: clamp(18px, 3vw, 32px); display: grid; gap: 22px; }
+.headline { font-family: var(--display); font-weight: 800; font-size: clamp(1.6rem, 4.2vw, 2.9rem); line-height: 1.15; text-wrap: balance; margin: 0; min-height: 2.3em; }
+.choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.choices button { padding: 16px 10px; border-radius: 12px; border: 3px solid transparent; font-weight: 700; font-size: 1.15rem; color: var(--fg); }
+.choices .k { background: var(--staat-soft); border-color: var(--staat); }
+.choices .s { background: var(--mitte-soft); border-color: var(--mitte); }
+.choices .f { background: var(--markt-soft); border-color: var(--markt); }
+.choices small { display: block; font-weight: 400; font-size: .85rem; color: var(--muted); }
+.choices button:disabled { opacity: .35; cursor: default; }
+.choices button.picked { opacity: 1; box-shadow: 0 0 0 4px var(--fg) inset; }
+.reveal { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 16px; }
+.reveal .verdict { font-weight: 700; font-size: 1.2rem; }
+.reveal p { margin: 0; max-width: 70ch; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.primary { background: var(--fg); color: var(--surface); border: none; border-radius: 10px; padding: 12px 22px; font-weight: 600; }
+.ghost { background: none; border: none; color: var(--muted); text-decoration: underline; padding: 6px 0; }
+.keys { font-size: .85rem; color: var(--muted); }
+kbd { font-family: var(--body); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; }
+
+.board { display: grid; grid-template-columns: 1fr .8fr 1fr; gap: 12px; }
+.col { border-radius: 12px; padding: 12px; display: grid; gap: 8px; align-content: start; min-width: 0; min-height: 140px; }
+.col h2 { font-family: var(--display); font-size: 1.1rem; margin: 0 0 4px; }
+.col.k { background: var(--staat-soft); } .col.k h2 { color: var(--staat); }
+.col.s { background: var(--mitte-soft); } .col.s h2 { color: var(--mitte); }
+.col.f { background: var(--markt-soft); } .col.f h2 { color: var(--markt); }
+.chip { background: var(--surface); border-radius: 8px; padding: 8px 10px; font-size: .95rem; line-height: 1.3; border: 1px solid var(--line); }
+.chip .note { display: block; font-size: .8rem; color: var(--muted); margin-top: 4px; }
+.empty { font-size: .9rem; color: var(--muted); }
+.summary { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: grid; gap: 10px; }
+.summary p { margin: 0; max-width: 75ch; }
+@media (max-width: 700px) { .board { grid-template-columns: 1fr; } .choices { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="top">
+    <h1>Keynes oder Friedman?</h1>
+    <span class="kicker" id="count"></span>
+  </div>
+
+  <section class="stage" aria-live="polite">
+    <span class="kicker">Schlagzeile · Stand November 2026</span>
+    <p class="headline" id="headline"></p>
+    <div class="choices" id="choices">
+      <button class="k" data-side="k">Keynes<small>Staat kurbelt Nachfrage an</small></button>
+      <button class="s" data-side="s">Strittig<small>passt zu beiden</small></button>
+      <button class="f" data-side="f">Friedman<small>Staat verbessert Angebot</small></button>
+    </div>
+    <div class="reveal" id="reveal" hidden>
+      <span class="verdict" id="verdict"></span>
+      <p id="why"></p>
+    </div>
+    <div class="row">
+      <span class="keys">Tasten: <kbd>K</kbd> <kbd>S</kbd> <kbd>F</kbd> zum Zuordnen, <kbd>→</kbd> weiter</span>
+      <div style="display:flex;gap:16px;align-items:center">
+        <button class="ghost" id="undo" hidden>Zuordnung ändern</button>
+        <button class="primary" id="next" hidden>Nächste Schlagzeile</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="board" aria-label="Tafel">
+    <div class="col k"><h2>Keynes</h2><div id="col-k" style="display:grid;gap:8px"><span class="empty">Noch keine Schlagzeile</span></div></div>
+    <div class="col s"><h2>Strittig</h2><div id="col-s" style="display:grid;gap:8px"><span class="empty">Noch keine Schlagzeile</span></div></div>
+    <div class="col f"><h2>Friedman</h2><div id="col-f" style="display:grid;gap:8px"><span class="empty">Noch keine Schlagzeile</span></div></div>
+  </section>
+
+  <section class="summary" id="summary" hidden>
+    <span class="kicker">Fazit</span>
+    <p id="sumtext"></p>
+    <p>Die aktuelle Wirtschaftspolitik lässt sich nicht einer Konzeption zuordnen. In der Tagespolitik besteht eine starke Tendenz zu einem Mix aus Elementen der Angebots- und der Nachfrageorientierung.</p>
+    <div><button class="ghost" id="restart">Neu starten</button></div>
+  </section>
+</main>
+
+<script>
+// side: k = Keynes, f = Friedman, s = strittig. accept: Zuordnungen, die als passend gelten
+const CARDS = [
+  { h: "500 Milliarden Euro für Straßen, Schienen, Brücken und Schulen", side: "k", accept: ["k"],
+    why: "Der Staat erhöht seine Ausgaben für Investitionen. Bauunternehmen und Zulieferer bekommen Aufträge, Produktion und Beschäftigung steigen." },
+  { h: "Körperschaftsteuer sinkt ab 2028 schrittweise von 15 auf 10 Prozent", side: "f", accept: ["f"],
+    why: "Eine niedrigere Unternehmensbesteuerung erhöht die Gewinne und schafft Anreize, in Deutschland zu investieren." },
+  { h: "Mindestlohn steigt 2027 auf 14,60 Euro", side: "k", accept: ["k"],
+    why: "Geringverdiener haben mehr Kaufkraft und geben das Geld meist direkt aus. Das stärkt die Binnennachfrage. Anhänger von Friedman sehen darin eher höhere Kosten für Unternehmen." },
+  { h: "Wirtschaftsweise fordern den Abbau von Subventionen", side: "f", accept: ["f"],
+    why: "Weniger staatliche Eingriffe in den Markt und eine geringere Staatsquote. Der Markt soll selbst entscheiden, welche Unternehmen erfolgreich sind." },
+  { h: "Pendlerpauschale steigt auf 38 Cent ab dem ersten Kilometer", side: "k", accept: ["k"],
+    why: "Eine Steuererleichterung für Haushalte. Das verfügbare Einkommen steigt und damit der mögliche Konsum." },
+  { h: "Bürokratiekosten für Unternehmen sollen um ein Viertel sinken", side: "f", accept: ["f"],
+    why: "Deregulierung. Weniger Auflagen und Berichtspflichten verbessern die Rahmenbedingungen für Unternehmen." },
+  { h: "Aktivrente: Wer im Rentenalter weiterarbeitet, verdient bis 2.000 Euro im Monat steuerfrei", side: "f", accept: ["f", "s"],
+    why: "Eher Friedman. Der Arbeitsanreiz bringt Unternehmen mehr Arbeitskräfte. Strittig ist es, weil die Rentner auch mehr Geld zum Ausgeben haben." },
+  { h: "Bund nimmt 2026 fast 98 Milliarden Euro neue Kredite auf", side: "k", accept: ["k"],
+    why: "Deficit Spending. Der Staat finanziert zusätzliche Ausgaben auf Kredit, um die Nachfrage zu stützen. Genau das kritisieren Anhänger von Friedman." },
+  { h: "Stromsteuer für Industrie und Landwirtschaft sinkt auf das EU-Minimum", side: "f", accept: ["f"],
+    why: "Geringere Kosten für Unternehmen verbessern die Angebotsbedingungen und die Wettbewerbsfähigkeit." },
+  { h: "„Investitionsbooster“: Unternehmen können neue Maschinen schneller abschreiben", side: "s", accept: ["s", "k", "f"],
+    why: "Beide Seiten nutzen Abschreibungen. Keynes: Investitionsnachfrage in der Krise kurzfristig ankurbeln. Friedman: dauerhaft gute Bedingungen für Investitionen schaffen." }
+];
+const NAMES = { k: "Keynes", s: "strittig", f: "Friedman" };
+let i = 0, picks = [];
+const $ = id => document.getElementById(id);
+const btns = [...document.querySelectorAll("#choices button")];
+
+function show() {
+  const c = CARDS[i];
+  $("count").textContent = `Schlagzeile ${i + 1} von ${CARDS.length}`;
+  $("headline").textContent = c.h;
+  const p = picks[i];
+  btns.forEach(b => { b.disabled = !!p && b.dataset.side !== p; b.classList.toggle("picked", b.dataset.side === p); });
+  $("reveal").hidden = !p; $("undo").hidden = !p; $("next").hidden = !p;
+  if (p) {
+    const ok = c.accept.includes(p);
+    $("verdict").textContent = (ok ? "Passt. " : "Andere Sicht. ") + "Lösung: " + (c.side === "s" ? "strittig" : NAMES[c.side]);
+    $("verdict").style.color = ok ? "var(--ok)" : "var(--markt)";
+    $("why").textContent = c.why;
+    $("next").textContent = i < CARDS.length - 1 ? "Nächste Schlagzeile" : "Fazit zeigen";
+  }
+  renderBoard();
+}
+
+function renderBoard() {
+  ["k", "s", "f"].forEach(s => {
+    const el = $("col-" + s); el.innerHTML = "";
+    CARDS.forEach((c, k) => {
+      if (picks[k] !== s) return;
+      const d = document.createElement("div"); d.className = "chip"; d.textContent = c.h;
+      if (!c.accept.includes(s)) { const n = document.createElement("span"); n.className = "note"; n.textContent = "Lösung: " + NAMES[c.side]; d.appendChild(n); }
+      el.appendChild(d);
+    });
+    if (!el.children.length) el.innerHTML = '<span class="empty">Noch keine Schlagzeile</span>';
+  });
+}
+
+function pick(s) { if (picks[i] || i >= CARDS.length) return; picks[i] = s; show(); }
+function next() {
+  if (!picks[i]) return;
+  if (i < CARDS.length - 1) { i++; show(); }
+  else {
+    const hits = picks.filter((p, k) => CARDS[k].accept.includes(p)).length;
+    $("sumtext").textContent = `Die Klasse hat ${hits} von ${CARDS.length} Schlagzeilen passend zugeordnet. Auf der Tafel stehen ${picks.filter(p => p === "k").length} Maßnahmen bei Keynes und ${picks.filter(p => p === "f").length} bei Friedman.`;
+    $("summary").hidden = false; $("summary").scrollIntoView({ behavior: "smooth" });
+  }
+}
+btns.forEach(b => b.onclick = () => pick(b.dataset.side));
+$("next").onclick = next;
+$("undo").onclick = () => { picks[i] = undefined; show(); };
+$("restart").onclick = () => { i = 0; picks = []; $("summary").hidden = true; show(); };
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (k === "k" || k === "s" || k === "f") pick(k);
+  if (e.key === "ArrowRight" || e.key === "Enter") next();
+});
+show();
+</script>
+</body>
+</html>

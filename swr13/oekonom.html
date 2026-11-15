@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Welcher Ökonom steckt in dir?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+/* Layout: eine Karte pro Aussage, darunter immer die Linie zwischen Staat (Keynes) und Markt (Friedman) */
+:root {
+  --bg: #eef1f4;
+  --surface: #ffffff;
+  --fg: #1c2530;
+  --muted: #5b6774;
+  --line: #d3d9e0;
+  --staat: #1f6f78;      /* Keynes, Staat greift ein */
+  --markt: #b5651d;      /* Friedman, Markt regelt */
+  --staat-soft: #d8ecee;
+  --markt-soft: #f6e4d2;
+  --focus: #2f5fd0;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12171d; --surface: #1b232c; --fg: #e8edf2; --muted: #9aa7b4; --line: #2e3a46;
+    --staat: #5bb8c2; --markt: #e39a55; --staat-soft: #18363a; --markt-soft: #3d2a18; --focus: #8fb0ff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12171d; --surface: #1b232c; --fg: #e8edf2; --muted: #9aa7b4; --line: #2e3a46;
+  --staat: #5bb8c2; --markt: #e39a55; --staat-soft: #18363a; --markt-soft: #3d2a18; --focus: #8fb0ff;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 18px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 40px;
+}
+main { max-width: 640px; margin: 0 auto; display: grid; gap: 20px; }
+h1, h2 { font-family: var(--display); font-weight: 800; line-height: 1.1; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(1.9rem, 6vw, 2.6rem); }
+h2 { font-size: 1.5rem; }
+p { margin: 0; }
+.kicker { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: grid; gap: 16px; }
+
+/* Linie */
+.scale { display: grid; gap: 6px; }
+.track { position: relative; height: 14px; border-radius: 7px;
+  background: linear-gradient(90deg, var(--staat) 0%, var(--line) 50%, var(--markt) 100%); }
+.marker { position: absolute; top: 50%; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--surface); border: 4px solid var(--fg); transform: translate(-50%, -50%);
+  transition: left .5s ease; }
+.ends { display: flex; justify-content: space-between; gap: 12px; font-size: .9rem; font-weight: 600; }
+.ends span:first-child { color: var(--staat); }
+.ends span:last-child { color: var(--markt); text-align: right; }
+
+/* Frage */
+.progress { display: flex; gap: 4px; }
+.progress i { flex: 1; height: 5px; border-radius: 3px; background: var(--line); }
+.progress i.done { background: var(--fg); }
+.statement { font-family: var(--display); font-weight: 600; font-size: clamp(1.3rem, 4.5vw, 1.6rem); line-height: 1.25; text-wrap: balance; }
+.answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+button { font: inherit; cursor: pointer; }
+.answers button {
+  padding: 14px 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--surface); color: var(--fg); font-weight: 600;
+}
+.answers button:hover { border-color: var(--fg); }
+.answers button.sel { background: var(--fg); color: var(--surface); border-color: var(--fg); }
+button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.ghost { background: none; border: none; color: var(--muted); padding: 6px 0; text-decoration: underline; }
+.ghost:disabled { visibility: hidden; }
+.primary { background: var(--fg); color: var(--surface); border: none; border-radius: 10px; padding: 14px 22px; font-weight: 600; }
+
+/* Ergebnis */
+.place { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.place b { font-family: var(--display); font-size: 3.2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.people { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.person { border-radius: 10px; padding: 14px; display: grid; gap: 6px; font-size: .95rem; min-width: 0; }
+.person h3 { margin: 0; font-family: var(--display); font-size: 1.1rem; }
+.person.k { background: var(--staat-soft); }
+.person.f { background: var(--markt-soft); }
+.person.k h3 { color: var(--staat); }
+.person.f h3 { color: var(--markt); }
+.person.me { outline: 3px solid var(--fg); }
+.hint { font-size: .95rem; color: var(--muted); }
+@media (max-width: 480px) { .people { grid-template-columns: 1fr; } .answers { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .marker { transition: none; } }
+</style>
+</head>
+<body>
+
+<main>
+  <header style="display:grid;gap:8px">
+    <span class="kicker">Wirtschaftspolitik · 10 Aussagen</span>
+    <h1>Welcher Ökonom steckt in dir?</h1>
+  </header>
+
+  <section class="card" id="intro">
+    <p>Die Wirtschaft lahmt. Was soll der Staat tun? Zwei berühmte Ökonomen haben darauf ganz unterschiedliche Antworten gegeben. Sag zu zehn Aussagen, wie sehr du zustimmst. Am Ende siehst du, wem du näher bist.</p>
+    <div class="scale" aria-hidden="true">
+      <div class="track"><div class="marker" style="left:50%"></div></div>
+      <div class="ends"><span>Keynes</span><span>Friedman</span></div>
+    </div>
+    <p class="hint">Es gibt kein Richtig oder Falsch. Antworte spontan.</p>
+    <div><button class="primary" id="start">Los geht’s</button></div>
+  </section>
+
+  <section class="card" id="quiz" hidden>
+    <div class="progress" id="progress" aria-hidden="true"></div>
+    <span class="kicker" id="count"></span>
+    <p class="statement" id="statement" aria-live="polite"></p>
+    <div class="answers" id="answers"></div>
+    <div class="row">
+      <button class="ghost" id="back">Zurück</button>
+    </div>
+  </section>
+
+  <section class="card" id="result" hidden>
+    <span class="kicker">Dein Ergebnis</span>
+    <h2 id="verdict"></h2>
+    <div class="scale">
+      <div class="track"><div class="marker" id="rmarker" style="left:50%"></div></div>
+      <div class="ends"><span>Keynes</span><span>Friedman</span></div>
+    </div>
+    <div class="place"><b id="place"></b><span>Dein Platz auf der Linie im Raum<br><span class="hint">1 = ganz bei Keynes, 10 = ganz bei Friedman</span></span></div>
+    <p id="text"></p>
+    <div class="people">
+      <div class="person k" id="pk">
+        <h3>John Maynard Keynes</h3>
+        <span class="hint">britischer Ökonom, 1883–1946</span>
+        <p>Wenn die Wirtschaft in der Krise steckt, soll der Staat eingreifen und Geld ausgeben, damit wieder gekauft und produziert wird.</p>
+      </div>
+      <div class="person f" id="pf">
+        <h3>Milton Friedman</h3>
+        <span class="hint">US-amerikanischer Ökonom, 1912–2006</span>
+        <p>Der Staat soll gute Bedingungen für Unternehmen schaffen und sich sonst möglichst heraushalten. Den Rest regelt der Markt.</p>
+      </div>
+    </div>
+    <p class="hint">Stell dich jetzt an deinen Platz auf der Linie. Im Video erfährst du, wie die beiden Denkrichtungen heißen.</p>
+    <div><button class="ghost" id="again">Noch einmal machen</button></div>
+  </section>
+</main>
+
+<script>
+// dir: +1 = Keynes (Staat greift ein), -1 = Friedman (Markt regelt)
+const ITEMS = [
+  ["Wenn die Wirtschaft schrumpft, soll der Staat mehr Geld ausgeben, auch wenn er dafür Schulden machen muss.", 1],
+  ["Der Staat soll sich aus der Wirtschaft möglichst heraushalten. Unternehmen wissen selbst am besten, was sie tun.", -1],
+  ["Ein höherer Mindestlohn ist gut für die Wirtschaft, weil die Menschen dann mehr einkaufen.", 1],
+  ["Niedrigere Steuern für Unternehmen sorgen für neue Arbeitsplätze.", -1],
+  ["In einer Krise sollen Familien Geld vom Staat bekommen, zum Beispiel einen Bonus pro Kind.", 1],
+  ["Weniger Vorschriften und Bürokratie bringen der Wirtschaft mehr als staatliche Förderprogramme.", -1],
+  ["Der Staat soll in der Krise Straßen, Schulen und Bahnstrecken bauen lassen, damit Firmen Aufträge bekommen.", 1],
+  ["Unternehmen sollen Mitarbeitende leichter einstellen und auch leichter entlassen können.", -1],
+  ["Wenn in einer Krise alle sparen, wird die Krise noch schlimmer.", 1],
+  ["Sozialleistungen dürfen nicht so hoch sein, dass sich Arbeiten kaum noch lohnt.", -1]
+];
+const OPTS = [["Stimme voll zu", 2], ["Stimme eher zu", 1], ["Eher nicht", -1], ["Gar nicht", -2]];
+const MAX = ITEMS.length * 2;
+let i = 0, answers = new Array(ITEMS.length).fill(null);
+const $ = id => document.getElementById(id);
+
+function render() {
+  $("count").textContent = `Aussage ${i + 1} von ${ITEMS.length}`;
+  $("statement").textContent = ITEMS[i][0];
+  $("progress").innerHTML = ITEMS.map((_, k) => `<i class="${k < i ? "done" : ""}"></i>`).join("");
+  $("answers").innerHTML = "";
+  OPTS.forEach(([label, v]) => {
+    const b = document.createElement("button");
+    b.textContent = label;
+    if (answers[i] === v) b.className = "sel";
+    b.onclick = () => { answers[i] = v; if (i < ITEMS.length - 1) { i++; render(); } else showResult(); };
+    $("answers").appendChild(b);
+  });
+  $("back").disabled = i === 0;
+}
+
+function showResult() {
+  const score = answers.reduce((s, v, k) => s + v * ITEMS[k][1], 0); // +MAX = ganz Keynes
+  const pos = (MAX - score) / (2 * MAX);                              // 0 = Keynes, 1 = Friedman
+  const place = Math.round(1 + 9 * pos);
+  let verdict, text, side = null;
+  if (score >= 8)       { verdict = "Ganz klar Keynes"; side = "k"; text = "Du traust dem Staat viel zu. Wenn es der Wirtschaft schlecht geht, soll er handeln und Geld in die Hand nehmen."; }
+  else if (score >= 3)  { verdict = "Eher Keynes"; side = "k"; text = "In der Krise soll der Staat für dich eingreifen. Ganz ohne Markt geht es aber auch für dich nicht."; }
+  else if (score > -3)  { verdict = "Irgendwo dazwischen"; text = "Du nimmst dir von beiden etwas. So machen es auch die meisten Regierungen in der Praxis."; }
+  else if (score > -8)  { verdict = "Eher Friedman"; side = "f"; text = "Du setzt eher auf Unternehmen und Wettbewerb. Ganz ohne Staat soll es für dich aber auch nicht gehen."; }
+  else                  { verdict = "Ganz klar Friedman"; side = "f"; text = "Du vertraust dem Markt. Der Staat soll gute Bedingungen schaffen und sich sonst heraushalten."; }
+  $("verdict").textContent = verdict;
+  $("text").textContent = text;
+  $("place").textContent = place;
+  $("pk").classList.toggle("me", side === "k");
+  $("pf").classList.toggle("me", side === "f");
+  $("quiz").hidden = true; $("result").hidden = false;
+  $("rmarker").style.left = "50%";
+  requestAnimationFrame(() => requestAnimationFrame(() => { $("rmarker").style.left = (pos * 100) + "%"; }));
+}
+
+$("start").onclick = () => { $("intro").hidden = true; $("quiz").hidden = false; render(); };
+$("back").onclick = () => { if (i > 0) { i--; render(); } };
+$("again").onclick = () => { i = 0; answers.fill(null); $("result").hidden = true; $("quiz").hidden = false; render(); };
+</script>
+</body>
+</html>
